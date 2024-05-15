@@ -8,16 +8,17 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString
-public class Board extends BaseEntity {
+@ToString(exclude = "board")
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bno;
+    private Long rno;
 
-    private String title;
+    private String text;
 
-    private String content;
+    @ManyToOne
+    private Member reviewer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member writer;
+    @ManyToOne
+    private Board board;
 }
