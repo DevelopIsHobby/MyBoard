@@ -8,18 +8,16 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude="writer")
-public class Board extends BaseEntity {
+@ToString(exclude = "board")
+public class BoardImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bno;
+    private Long inum;
 
-    private String title;
-
-    private String content;
+    private String uuid;
+    private String imgName;
+    private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member writer;
-
-    private Integer likeCount;
+    private Board board;
 }
