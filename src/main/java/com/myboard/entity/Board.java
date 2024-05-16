@@ -22,4 +22,8 @@ public class Board extends BaseEntity {
     private Member writer;
 
     private Integer likeCount;
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
 }
