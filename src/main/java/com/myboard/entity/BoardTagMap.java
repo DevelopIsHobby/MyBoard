@@ -8,16 +8,16 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"board", })
-public class BoardImage {
+@ToString(exclude = "board")
+public class BoardTagMap extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inum;
-
-    private String uuid;
-    private String imgName;
-    private String path;
+    private Long mapum;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Tag tag;
 }
