@@ -12,6 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-    @Query(value = "select b, w, count(r) from Board b left join b.writer w left join Review r on r.board = b where b.bno=:bno group by b ")
-    List<Object[]> getBoardWithReplyCount(@Param("bno") Long bno);
+    @Query(value = "select b, w, bi, count(distinct r) from Board b " +
+            "left join b.writer w " +
+            "left join BoardImage bi on b = bi.board " +
+            "left join Review r on r.board = b " +
+            "group by b, w, bi order by b.bno")
+    List<Object[]> getList();
+
+    @Query(value="select bt.board.bno, t.name from BoardTagMap bt " +
+            "left join bt.tag t " +
+            "group by bt.board.bno, t.name order by bt.board.bno")
+    List<Object[]> getTag();
+
+
+    @Modifying
+    @Transactional
+    @Query(value="update board set like_count=:boardCount where bno=:bno", nativeQuery=true)
+    int updateQuery(@Param("boardCount") int boardCount, @Param("bno")long bno);
+
 }

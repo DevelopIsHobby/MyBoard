@@ -28,6 +28,23 @@ class BoardRepositoryTest {
     private TagRepository tagRepository;
 
     @Test
+    public void getListTags() {
+        List<Object[]> result = boardRepository.getTag();
+
+        for (Object[] arr: result) {
+            System.out.println(Arrays.toString(arr));
+        }
+    }
+
+    @Test
+    public void getListTest() {
+        List<Object[]> result = boardRepository.getList();
+        for (Object[] arr: result) {
+            System.out.println(Arrays.toString(arr));
+        }
+    }
+
+    @Test
     public void selectTags() {
         List<Object[]> list = boardTagMapRepository.getBoardWithTag(10l);
         for(Object[] arr : list) {
@@ -43,26 +60,28 @@ class BoardRepositoryTest {
         Tag tag2 = Tag.builder()
                 .name("Devops").build();
 
-        tagRepository.save(tag1);
-        tagRepository.save(tag2);
+        Tag tag3 = Tag.builder()
+                        .name("Mlops").build();
+//        tagRepository.save(tag1);
+//        tagRepository.save(tag2);
+        tagRepository.save(tag3);
     }
 
     @Test
     public void insertTags() {
-        BoardTagMap boardTagMap = BoardTagMap.builder().tag(Tag.builder().tagnum(1l).build()).board(Board.builder().bno(10l).build()).build();
-
-        boardTagMapRepository.save(boardTagMap);
-//        IntStream.rangeClosed(1,100).forEach(i -> {
-//            BoardTagMap boardTagMap = BoardTagMap.builder()
-//                    .tag(tag1)
-//                    .tag(tag2)
-//                    .board(Board.builder().bno((long) i).build()).build();
-//            boardTagMapRepository.save(boardTagMap);
-//        });
+        IntStream.rangeClosed(1,300).forEach(i -> {
+            int tag = (int) (Math.random()*3) + 1;
+            int bno = (int) (Math.random() * 100) +1;
+            BoardTagMap boardTagMap = BoardTagMap.builder()
+                    .tag(Tag.builder().tagnum((long) tag).build())
+                    .board(Board.builder().bno((long) bno).build()).build();
+            boardTagMapRepository.save(boardTagMap);
+        });
     }
 
     @Test
     public void insertBoard() {
+        boardRepository.deleteAll();
         IntStream.rangeClosed(1,100).forEach(i -> {
             Member member = Member.builder().email("user"+i+"@aaa.com").build();
 
@@ -77,10 +96,19 @@ class BoardRepositoryTest {
     }
 
     @Test
-    public void testWithReviewCount() {
-        Long bno =(Long) 10l;
+    public void insertLikes() {
+        IntStream.rangeClosed(1,100).forEach(i -> {
 
-        List<Object[]> result = boardRepository.getBoardWithReplyCount(bno);
+            int likeCnt = (int) (Math.random()*6);
+
+            boardRepository.updateQuery(likeCnt, (long) i);
+
+        });
+    }
+
+    @Test
+    public void testWithReviewCount() {
+        List<Object[]> result = boardRepository.getList();
 
         for(Object[] arr : result) {
             System.out.println(Arrays.toString(arr));
