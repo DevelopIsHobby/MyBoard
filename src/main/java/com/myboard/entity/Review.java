@@ -16,9 +16,9 @@ public class Review extends BaseEntity {
 
     private String text;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member reviewer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 }

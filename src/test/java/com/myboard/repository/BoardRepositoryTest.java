@@ -27,9 +27,26 @@ class BoardRepositoryTest {
     @Autowired
     private TagRepository tagRepository;
 
+//    @Test
+//    public void getListwithTagTest() {
+//        List<Object[]> result = boardRepository.getListWithTags();
+//        for (Object[] arr: result) {
+//            System.out.println(Arrays.toString(arr));
+//        }
+//    }
+    @Test
+    public void getBoardbyBno() {
+        List<Object[]> result = boardRepository.getBoardbyBno(10l);
+
+        for(Object[] arr : result) {
+            System.out.println(Arrays.toString(arr));
+        }
+
+    }
+
     @Test
     public void getListTags() {
-        List<Object[]> result = boardRepository.getTag();
+        List<Object[]> result = boardRepository.getTagByBno(10l);
 
         for (Object[] arr: result) {
             System.out.println(Arrays.toString(arr));

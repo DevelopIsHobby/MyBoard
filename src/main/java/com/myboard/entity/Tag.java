@@ -1,10 +1,10 @@
 package com.myboard.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -18,4 +18,5 @@ public class Tag extends BaseEntity{
     private Long tagnum;
 
     private String name;
+
 }
