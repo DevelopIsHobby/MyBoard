@@ -3,6 +3,7 @@ package com.myboard.service;
 import com.myboard.dto.BoardDTO;
 import com.myboard.entity.Board;
 import com.myboard.entity.BoardImage;
+import com.myboard.entity.Member;
 import com.myboard.repository.BoardImageRepository;
 import com.myboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,24 @@ public class BoardServiceImpl implements BoardService {
             boardImageRepository.save(boardImage);
         });
         return board.getBno();
+    }
+
+    @Override
+    public List<Object[]> getTags(Long bno) {
+        return boardRepository.getTagByBno(bno);
+    }
+
+    @Override
+    public List<Object[]> getList() {
+        return boardRepository.getList();
+    }
+
+    @Override
+    public BoardDTO get(Long bno) {
+        Object result = boardRepository.getBoardbyBno(bno);
+
+        Object[] arr = (Object[]) result;
+
+        return null;
     }
 }

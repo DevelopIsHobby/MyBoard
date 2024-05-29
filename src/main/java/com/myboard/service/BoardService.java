@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
 public interface BoardService {
     Long register(BoardDTO boardDTO);
 
+    List<Object[]> getTags(Long bno);
+
+    List<Object[]> getList();
+
+    BoardDTO get(Long bno);
+
     // Map 타입으로 반환
     default Map<String, Object> dtoToEntity(BoardDTO boardDTO) {
         Map<String, Object> entitypMap = new HashMap<>();
