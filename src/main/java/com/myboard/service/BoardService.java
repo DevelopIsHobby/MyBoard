@@ -17,9 +17,10 @@ import java.util.stream.Collectors;
 public interface BoardService {
     Long register(BoardDTO boardDTO);
 
-    List<Object[]> getTags(Long bno);
+    BoardDTO getTags(BoardDTO boardDTO);
 
-    List<Object[]> getList();
+    List<BoardDTO> getList();
+
 
     BoardDTO get(Long bno);
 
@@ -57,7 +58,7 @@ public interface BoardService {
         return entitypMap;
     }
 
-    default BoardDTO entityToDTO(Board board, Member member, List<BoardImage> boardImages, Long replyCount){
+    default BoardDTO entityToDTO(Board board, Member member, BoardImage boardImage, Long replyCount){
         BoardDTO boardDTO = BoardDTO.builder()
                 .bno(board.getBno())
                 .title(board.getTitle())
@@ -69,17 +70,13 @@ public interface BoardService {
                 .replyCount(replyCount.intValue())
                 .build();
 
-        List<BoardImageDTO> boardImageDTOList = boardImages.stream()
-                .map(boardImage -> {
-                    return BoardImageDTO.builder().imgName(boardImage.getImgName())
-                            .path(boardImage.getPath())
-                            .uuid(boardImage.getUuid())
-                            .build();
-                }).collect(Collectors.toList());
+        BoardImageDTO boardImageDTO = BoardImageDTO.builder()
+                                .uuid(boardImage.getUuid())
+                                .imgName(boardImage.getImgName())
+                                        .path(boardImage.getPath())
+                                                .build();
 
-
-
-        boardDTO.setImageDTOList(boardImageDTOList);
+        boardDTO.setImageDTO(boardImageDTO);
 
         return boardDTO;
     }

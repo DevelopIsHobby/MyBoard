@@ -17,7 +17,9 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
-class BoardRepositoryTest {
+class
+
+BoardRepositoryTest {
     @Autowired
     private BoardRepository boardRepository;
 
@@ -46,11 +48,9 @@ class BoardRepositoryTest {
 
     @Test
     public void getListTags() {
-        List<Object[]> result = boardRepository.getTagByBno(10l);
+        Object[] result = boardRepository.getTagByBno(10l);
 
-        for (Object[] arr: result) {
-            System.out.println(Arrays.toString(arr));
-        }
+        System.out.println(Arrays.toString(result));
     }
 
     @Test

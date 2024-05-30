@@ -20,6 +20,7 @@ public class BoardDTO {
     private String writerEmail;
     private int likeCount;
     private List<BoardImageDTO> imageDTOList = new ArrayList<>();
+    private BoardImageDTO imageDTO;
     private List<String> tags = new ArrayList<>();
     private LocalDateTime regDate;
     private LocalDateTime modDate;

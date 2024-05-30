@@ -17,14 +17,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "left join b.writer w " +
             "left join BoardImage bi on b=bi.board " +
             "left join Review r on r.board = b " +
-            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b)" +
+            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b) and b.bno <=10" +
             "group by b, bi, w order by b.bno")
     List<Object[]> getList();
 
     @Query(value="select t.name from BoardTagMap bt " +
             "left join bt.tag t " +
             "where bt.board.bno =:bno group by t.name order by bt.board.bno")
-    List<Object[]> getTagByBno(@Param("bno") Long bno);
+    Object[] getTagByBno(@Param("bno") Long bno);
 
     @Query(value = "select b, w,bi, count(distinct r) from Board b " +
             "left join b.writer w " +

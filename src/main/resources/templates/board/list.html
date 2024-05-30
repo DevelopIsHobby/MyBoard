@@ -49,65 +49,40 @@
     <div class="container">
         <div class="row">
             <div class="mt-2 p-5 bg-secondary text-white rounded">
-                <h1>HTML + CSS3 Basic</h1>
+                <h1>Board List Page</h1>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
                 <a href="#" class="btn btn-primary btn-lg">Register</a>
             </div>
-        
+
+
             <div class="row row-cols-1 row-cols-md-3 g-3">
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="/static/img/미르.jpg" style="max-height: 18rem;" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
+                <tbody>
+                <tr th:each="dto:${result}">
+                    <div class="col">
+                        <div class="card h-70">
+                            <img th:src="|/display?fileName=${dto.imageDTO.getThumbnailURL()}|" style="max-height: 18rem;" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-9">
+                                        <h4 class="card-title">[[${dto.title}]]<span><small><b> ([[${dto.replyCount}]])</b></small></span></h4>
+                                    </div>
+                                    <p class="card-text">[[${dto.writerEmail}]]</p>
+                                </div>
+
+                                <span th:each="tag:${dto.tags}" class="card-text"><small>#[[${tag}]]   </small></span>
+                                <p class="card-text">Like : <b>[[${dto.likeCount}]]</b></p>
+
                             </div>
-                            <div class="col-3">Writer</div>
-                        </div>
-                        <p class="card-text">This 7is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>      
-                    
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="/static/img/미르.jpg" style="max-height: 18rem;"  class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
+                            <div class="card-footer">
+                                <small th:if="${dto.regDate != dto.modDate}" class="text-body-secondary">[[${#temporals.format(dto.modDate,'yyyy/MM/dd')}]]</small>
+                                <small th:if="${dto.regDate == dto.modDate}" class="text-body-secondary">[[${#temporals.format(dto.regDate,'yyyy/MM/dd')}]]</small>
                             </div>
-                            <div class="col-3">Writer</div>
                         </div>
-                      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="/static/img/미르.jpg" style="max-height: 18rem;" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
-                            </div>
-                            <div class="col-3">Writer</div>
-                        </div>
-                      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </div> <!--게시글 하나 끝-->
+                </tr>
+                </tbody>
+
+            </div>
         </div>
 </body>
 </html>
