@@ -1,6 +1,8 @@
 package com.myboard.service;
 
 import com.myboard.dto.BoardDTO;
+import com.myboard.dto.PageRequestDTO;
+import com.myboard.dto.PageResultDTO;
 import com.myboard.entity.Board;
 import com.myboard.entity.BoardImage;
 import com.myboard.entity.Member;
@@ -8,14 +10,15 @@ import com.myboard.repository.BoardImageRepository;
 import com.myboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -52,8 +55,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardDTO> getList() {
-        List<Object[]> result = boardRepository.getList();
+    public PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = (Pageable) pageRequestDTO.getPageable(Sort.by("bno").descending());
+        Page<Object[]> result = boardRepository.getList(pageable);
 
         Function<Object[], BoardDTO> fn = (arr -> entityToDTO(
                 (Board) arr[0],
@@ -62,9 +66,7 @@ public class BoardServiceImpl implements BoardService {
                 (Long) arr[3]
         ));
 
-        List<BoardDTO> dtoList = result.stream().map(fn).collect(Collectors.toList());
-
-        return dtoList;
+        return new PageResultDTO<>(result, fn);
     }
 
     @Override

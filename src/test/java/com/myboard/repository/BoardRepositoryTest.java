@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.awt.print.Pageable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class
 
@@ -55,10 +54,15 @@ BoardRepositoryTest {
 
     @Test
     public void getListTest() {
-        List<Object[]> result = boardRepository.getList();
-        for (Object[] arr: result) {
-            System.out.println(Arrays.toString(arr));
-        }
+
+        Pageable pageable = PageRequest.of(0,10, Sort.by("bno").descending());
+        Page<Object[]> result = boardRepository.getList(pageable);
+
+        System.out.println("========================================");
+        result.getContent().forEach(obj -> {
+            System.out.println(Arrays.toString(obj));
+        });
+        System.out.println("========================================");
     }
 
     @Test
@@ -79,8 +83,8 @@ BoardRepositoryTest {
 
         Tag tag3 = Tag.builder()
                         .name("Mlops").build();
-//        tagRepository.save(tag1);
-//        tagRepository.save(tag2);
+        tagRepository.save(tag1);
+        tagRepository.save(tag2);
         tagRepository.save(tag3);
     }
 
@@ -89,10 +93,12 @@ BoardRepositoryTest {
         IntStream.rangeClosed(1,300).forEach(i -> {
             int tag = (int) (Math.random()*3) + 1;
             int bno = (int) (Math.random() * 100) +1;
-            BoardTagMap boardTagMap = BoardTagMap.builder()
-                    .tag(Tag.builder().tagnum((long) tag).build())
-                    .board(Board.builder().bno((long) bno).build()).build();
-            boardTagMapRepository.save(boardTagMap);
+            if( bno!=1) {
+                BoardTagMap boardTagMap = BoardTagMap.builder()
+                        .tag(Tag.builder().tagnum((long) tag).build())
+                        .board(Board.builder().bno((long) bno).build()).build();
+                boardTagMapRepository.save(boardTagMap);
+            }
         });
     }
 
@@ -123,12 +129,12 @@ BoardRepositoryTest {
         });
     }
 
-    @Test
-    public void testWithReviewCount() {
-        List<Object[]> result = boardRepository.getList();
-
-        for(Object[] arr : result) {
-            System.out.println(Arrays.toString(arr));
-        }
-    }
+//    @Test
+//    public void testWithReviewCount() {
+//        List<Object[]> result = boardRepository.getList();
+//
+//        for(Object[] arr : result) {
+//            System.out.println(Arrays.toString(arr));
+//        }
+//    }
 }

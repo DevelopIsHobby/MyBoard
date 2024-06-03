@@ -2,13 +2,12 @@ package com.myboard.service;
 
 import com.myboard.dto.BoardDTO;
 import com.myboard.dto.BoardImageDTO;
-import com.myboard.dto.BoardTagDTO;
+import com.myboard.dto.PageRequestDTO;
+import com.myboard.dto.PageResultDTO;
 import com.myboard.entity.Board;
 import com.myboard.entity.BoardImage;
 import com.myboard.entity.Member;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ public interface BoardService {
 
     BoardDTO getTags(BoardDTO boardDTO);
 
-    List<BoardDTO> getList();
+    PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO);
 
 
     BoardDTO get(Long bno);

@@ -17,9 +17,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "left join b.writer w " +
             "left join BoardImage bi on b=bi.board " +
             "left join Review r on r.board = b " +
-            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b) and b.bno <=10" +
-            "group by b, bi, w order by b.bno")
-    List<Object[]> getList();
+            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b)" +
+            "group by b, bi, w")
+    Page<Object[]> getList(Pageable pageable);
 
     @Query(value="select t.name from BoardTagMap bt " +
             "left join bt.tag t " +

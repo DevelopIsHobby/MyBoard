@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class ReviewRepositoryTest {
     @Autowired
@@ -59,16 +57,19 @@ class ReviewRepositoryTest {
             long bno = (long) (Math.random() * 100) + 1;
             long mno = (long) (Math.random() * 100) + 1;
 
-            Member member = Member.builder().email("user"+mno+"@aaa.com").build();
-            Board board = Board.builder().bno(bno).build();
+            if(bno !=1) {
+                Member member = Member.builder().email("user"+mno+"@aaa.com").build();
+                Board board = Board.builder().bno(bno).build();
 
-            Review review = Review.builder()
-                    .text("Review..."+i)
-                    .reviewer(member)
-                    .board(board)
-                    .build();
+                Review review = Review.builder()
+                        .text("Review..."+i)
+                        .reviewer(member)
+                        .board(board)
+                        .build();
 
-            reviewRepository.save(review);
+                reviewRepository.save(review);
+            }
+
         });
     }
 }

@@ -55,9 +55,12 @@
             </div>
 
 
-            <div class="row row-cols-1 row-cols-md-3 g-3">
-                <tbody>
-                <tr th:each="dto:${result}">
+            <div class="row row-cols-1 row-cols-md-3 g-3 list">
+                <div class="row" id="boardList"></div>
+                <div class="scrollerFooter"></div>
+
+                <tbody id="sentinel">
+                <tr th:each="dto:${result.dtoList}" class="mb-3">
                     <div class="col">
                         <div class="card h-70">
                             <img th:src="|/display?fileName=${dto.imageDTO.getThumbnailURL()}|" style="max-height: 18rem;" class="card-img-top" alt="...">
@@ -80,9 +83,78 @@
                         </div>
                     </div> <!--게시글 하나 끝-->
                 </tr>
+                    <!--  Pagination-->
+<!--                    <ul class="pagination mt-4 h-1 justify-content-center align-items-center">-->
+<!--                        <li class="page-item" th:if="${result.prev}">-->
+<!--                            <a th:href="@{/board/list(page=${result.start -1})}" class="page-link" tabindex="-1">Previous</a>-->
+<!--                        </li>-->
+
+<!--                        <li th:class=" 'page-item' + ${result.page == page? 'active' : ''}" th:each="page: ${result.pageList}">-->
+<!--                            <a th:href="@{/board/list(page=${page})}" class="page-link">[[${page}]]</a>-->
+<!--                        </li>-->
+
+<!--                        <li class="page-item" th:if="${result.next}">-->
+<!--                            <a th:href="@{/board/list(page=${result.end + 1})}" class="page-link" tabindex="-1">Next</a>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+                    <!--  Pagination 끝-->
                 </tbody>
 
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let page = 0;
+                let isLoading = false;
+
+                function loadItems() {
+                    if (isLoading) return;
+                    isLoading = true;
+
+                    fetch(`/board/list?page=${page}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const boardList = document.getElementById("boardList");
+                            data.dtoList.forEach(item => {
+                                const div = document.createElement("div");
+                                div.className = "col-12 mb-3";
+                                div.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.title}</h5>
+                                <p class="card-text">${item.content}</p>
+                                <p class="card-text"><small class="text-muted">${item.writerEmail}</small></p>
+                            </div>
+                        </div>
+                    `;
+                                boardList.appendChild(div);
+                            });
+
+                            if (data.page < data.totalPage - 1) {
+                                page++;
+                                isLoading = false;
+                            } else {
+                                const scrollerFooter = document.querySelector('.scrollerFooter');
+                                scrollerFooter.innerHTML = "<p>No more data</p>";
+                            }
+                        });
+                }
+
+                const observer = new IntersectionObserver(entries => {
+                    if (entries[0].intersectionRatio <= 0) return;
+                    loadItems();
+                });
+
+                observer.observe(document.querySelector('.scrollerFooter'));
+
+                loadItems(); // Initial load
+            });
+
+        </script>
+
+
+
+
 </body>
 </html>
