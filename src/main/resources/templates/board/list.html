@@ -55,105 +55,70 @@
             </div>
 
 
-            <div class="row row-cols-1 row-cols-md-3 g-3 list">
-                <div class="row" id="boardList"></div>
-                <div class="scrollerFooter"></div>
-
-                <tbody id="sentinel">
-                <tr th:each="dto:${result.dtoList}" class="mb-3">
-                    <div class="col">
-                        <div class="card h-70">
-                            <img th:src="|/display?fileName=${dto.imageDTO.getThumbnailURL()}|" style="max-height: 18rem;" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <div class="row mb-2">
-                                    <div class="col-9">
-                                        <h4 class="card-title">[[${dto.title}]]<span><small><b> ([[${dto.replyCount}]])</b></small></span></h4>
-                                    </div>
-                                    <p class="card-text">[[${dto.writerEmail}]]</p>
-                                </div>
-
-                                <span th:each="tag:${dto.tags}" class="card-text"><small>#[[${tag}]]   </small></span>
-                                <p class="card-text">Like : <b>[[${dto.likeCount}]]</b></p>
-
-                            </div>
-                            <div class="card-footer">
-                                <small th:if="${dto.regDate != dto.modDate}" class="text-body-secondary">[[${#temporals.format(dto.modDate,'yyyy/MM/dd')}]]</small>
-                                <small th:if="${dto.regDate == dto.modDate}" class="text-body-secondary">[[${#temporals.format(dto.regDate,'yyyy/MM/dd')}]]</small>
-                            </div>
-                        </div>
-                    </div> <!--게시글 하나 끝-->
-                </tr>
-                    <!--  Pagination-->
-<!--                    <ul class="pagination mt-4 h-1 justify-content-center align-items-center">-->
-<!--                        <li class="page-item" th:if="${result.prev}">-->
-<!--                            <a th:href="@{/board/list(page=${result.start -1})}" class="page-link" tabindex="-1">Previous</a>-->
-<!--                        </li>-->
-
-<!--                        <li th:class=" 'page-item' + ${result.page == page? 'active' : ''}" th:each="page: ${result.pageList}">-->
-<!--                            <a th:href="@{/board/list(page=${page})}" class="page-link">[[${page}]]</a>-->
-<!--                        </li>-->
-
-<!--                        <li class="page-item" th:if="${result.next}">-->
-<!--                            <a th:href="@{/board/list(page=${result.end + 1})}" class="page-link" tabindex="-1">Next</a>-->
-<!--                        </li>-->
-<!--                    </ul>-->
-                    <!--  Pagination 끝-->
-                </tbody>
+            <div id="content-container">
 
             </div>
+
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                let page = 0;
-                let isLoading = false;
+            let currentPage = 1;
+            const pageSize = 10; // 한 번에 가져올 데이터의 개수
+            const totalPage =
+            $(document).ready(function() {
+                loadMoreData(currentPage, pageSize); // 페이지 로드 시 초기 데이터 로드
 
-                function loadItems() {
-                    if (isLoading) return;
-                    isLoading = true;
-
-                    fetch(`/board/list?page=${page}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const boardList = document.getElementById("boardList");
-                            data.dtoList.forEach(item => {
-                                const div = document.createElement("div");
-                                div.className = "col-12 mb-3";
-                                div.innerHTML = `
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">${item.title}</h5>
-                                <p class="card-text">${item.content}</p>
-                                <p class="card-text"><small class="text-muted">${item.writerEmail}</small></p>
-                            </div>
-                        </div>
-                    `;
-                                boardList.appendChild(div);
-                            });
-
-                            if (data.page < data.totalPage - 1) {
-                                page++;
-                                isLoading = false;
-                            } else {
-                                const scrollerFooter = document.querySelector('.scrollerFooter');
-                                scrollerFooter.innerHTML = "<p>No more data</p>";
-                            }
-                        });
-                }
-
-                const observer = new IntersectionObserver(entries => {
-                    if (entries[0].intersectionRatio <= 0) return;
-                    loadItems();
+                $(window).scroll(function() {
+                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 20) {
+                        currentPage++;
+                        console.log(currentPage)
+                        loadMoreData(currentPage, pageSize);
+                    }
                 });
-
-                observer.observe(document.querySelector('.scrollerFooter'));
-
-                loadItems(); // Initial load
             });
 
+            function loadMoreData(page, size) {
+                $.ajax({
+                    url: '/api/data',
+                    method: 'GET',
+                    data: { page: page, size: size },
+                    success: function(data) {
+                        console.log("Data fetched",data);
+                        updateContent(data.dtoList); // Page 객체의 content 리스트를 사용
+                    },
+                    error: function(error) {
+                        console.error("Error fetching data", error);
+                    }
+                });
+            }
+
+            function updateContent(data) {
+                let content = '<div class="row row-cols-1 row-cols-md-3 g-3 list">';
+                data.forEach(dto => {
+                    console.log(dto);
+                    content += '<div class="col">'
+                    content += '<div class="card h-70">'
+                    content += '<img src="/display?fileName=' + dto.imageDTO.thumbnailURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
+                    content += '<div class="card-body">'
+                    content += '<div class="row mb-2">'
+                    content += '<div class="col-9">'
+                    content += '<h4 class="card-title">' + dto.title + '<span><small><b> (' + dto.replyCount + ')</b></small></span></h4>'
+                    content += '</div>'
+                    content += '<p class="card-text">' + dto.writerEmail + '</p></div>'
+                    dto.tags.forEach(tag => {
+                        content += '<span class="card-text"><small>#' + tag + '   </small></span>'
+                    });
+                    content += '<p class="card-text">Like : <b>' + dto.likeCount + '</b></p></div>'
+                    content += '<div class="card-footer">'
+                    content += '<small>' + (dto.regDate != dto.modDate ? dto.modDate : dto.regDate) + '</small>'
+                    content += '</div></div></div>'
+                });
+                content += '</div>'
+                $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가
+            }
+
         </script>
-
-
 
 
 </body>

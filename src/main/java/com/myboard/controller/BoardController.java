@@ -6,6 +6,8 @@ import com.myboard.dto.PageResultDTO;
 import com.myboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +40,8 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+
+
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
         log.info("list..................");
@@ -49,20 +53,5 @@ public class BoardController {
         }
         result.setDtoList(resultWithTags);
         model.addAttribute("result", result);
-    }
-
-    @PostMapping("/scroll")
-    @ResponseBody
-    public ResponseEntity<PageResultDTO<BoardDTO, Object[]>> scrollList(PageRequestDTO pageRequestDTO) {
-        log.info("list with scrolls..................");
-        PageResultDTO<BoardDTO, Object[]> result = boardService.getList(pageRequestDTO);
-
-        List<BoardDTO> resultWithTags = new ArrayList<>();
-        for(BoardDTO boardDTO : result.getDtoList()){
-            resultWithTags.add(boardService.getTags(boardDTO));
-        }
-        result.setDtoList(resultWithTags);
-
-        return ResponseEntity.ok(result);
     }
 }
