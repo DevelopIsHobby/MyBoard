@@ -28,6 +28,11 @@ BoardRepositoryTest {
     @Autowired
     private TagRepository tagRepository;
 
+    @Test
+    public void increaseLikeCount() {
+        boardRepository.updateLikeCount(-1,10l);
+    }
+
 //    @Test
 //    public void getListwithTagTest() {
 //        List<Object[]> result = boardRepository.getListWithTags();
@@ -43,6 +48,12 @@ BoardRepositoryTest {
             System.out.println(Arrays.toString(arr));
         }
 
+    }
+
+    @Test
+    public void findByBno() {
+        Integer bno_56 = boardRepository.findByBno(56l);
+        System.out.println("bno_56 = " + bno_56);
     }
 
     @Test
@@ -124,7 +135,7 @@ BoardRepositoryTest {
 
             int likeCnt = (int) (Math.random()*6);
 
-            boardRepository.updateQuery(likeCnt, (long) i);
+            boardRepository.updateLikeCount(likeCnt, (long) i);
 
         });
     }

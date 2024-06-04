@@ -11,11 +11,10 @@ import com.myboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +67,15 @@ public class BoardServiceImpl implements BoardService {
         ));
 
         return new PageResultDTO<>(result, fn);
+    }
+
+    @Override
+    public void updateCount(Board board, Boolean likeBoolean) {
+        if(likeBoolean) {
+            boardRepository.updateLikeCount(1, board.getBno());
+        }else {
+            boardRepository.updateLikeCount(-1, board.getBno());
+        }
     }
 
     @Override

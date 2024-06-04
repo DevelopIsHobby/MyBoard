@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.stream.IntStream;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class MemberRepositoryTest {
     @Autowired
@@ -26,4 +24,9 @@ class MemberRepositoryTest {
         });
     }
 
+    @Test
+    public void findMember() {
+        String member56_email = memberRepository.findByEmail("user56@aaa.com");
+        System.out.println(member56_email);
+    }
 }

@@ -18,6 +18,4 @@ public class Recommendation {
     private Member writer;
     @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
-
-
 }

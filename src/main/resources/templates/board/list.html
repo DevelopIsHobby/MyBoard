@@ -11,6 +11,7 @@
             padding-top : 80px;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="navbar navbar-dark bg-dark fixed-top navbar-expand-lg">
@@ -45,7 +46,6 @@
             </div>
         </div>
     </div>
-
     <div class="container">
         <div class="row">
             <div class="mt-2 p-5 bg-secondary text-white rounded">
@@ -55,7 +55,7 @@
             </div>
 
 
-            <div id="content-container">
+            <div class="mt-2" id="content-container">
 
             </div>
 
@@ -64,9 +64,58 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
             let currentPage = 1;
-            const pageSize = 10; // 한 번에 가져올 데이터의 개수
-            const totalPage =
+            const pageSize = 9; // 한 번에 가져올 데이터의 개수
+
             $(document).ready(function() {
+
+                // 추천 기능 구현
+                $(document).on('click', '.like-button', function() {
+                    // 현재 클릭된 버튼의 부모 요소에서 board_bno와 member_email 값을 찾습니다.
+                    const board_bno = $(this).closest('.card').find('.board_bno').val();
+                    const member_email = $(this).closest('.card').find('.member_email').text();
+                    const likeCount = parseInt($(this).closest('.card').find('.like-count').text());
+                    console.log(board_bno);
+                    console.log(member_email);
+                    console.log(likeCount);
+
+                    // 클릭된 버튼을 변수에 저장
+                    const clickedButton = $(this);
+
+                    // 클릭된 버튼의 좋아요 상태를 나타내는 변수
+                    let isLiked = clickedButton.data('isLiked');
+
+                    // 좋아요 상태에 따라 URL 설정
+                    const url = isLiked ? `/disLike?likeCount=${likeCount}` : `/like?likeCount=${likeCount}`;
+
+                    $.ajax({
+                        url: url,
+                        method: isLiked ? 'DELETE' : 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ member_email:member_email, board_bno: board_bno}),
+                        success: function(response) {
+                            if (response) {
+                                // 서버 응답에서 좋아요 수를 받아옴
+                                const updatedLikeCount = response;
+
+                                // 좋아요 수를 화면에 반영
+                                const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
+                                likeCountElement.text(updatedLikeCount);
+
+                                // 클릭된 버튼의 좋아요 상태를 업데이트
+                                clickedButton.data('isLiked', !isLiked);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Error: ', error);
+                            clickedButton.data('isLiked', !isLiked);
+                        }
+                    });
+                })
+
+
+
+
+                // 무한스크롤 구현
                 loadMoreData(currentPage, pageSize); // 페이지 로드 시 초기 데이터 로드
 
                 $(window).scroll(function() {
@@ -94,32 +143,61 @@
             }
 
             function updateContent(data) {
-                let content = '<div class="row row-cols-1 row-cols-md-3 g-3 list">';
+                let content = '<div class="row row-cols-1 row-cols-md-3 g-3 mt-1 list">';
                 data.forEach(dto => {
-                    console.log(dto);
+                    // Date 객체로 변환
+                    let regDate = new Date(dto.regDate);
+                    let modDate = new Date(dto.modDate);
+                    let currentDate = new Date();
+
+                    let displayDate = dto.regDate !== dto.modDate ? modDate : regDate;
+
+                    // 날짜 차이를 계산하는 함수
+                    function getTimeDifference(date1, date2) {
+                        const diffTime = date2 - date1; // 시간 차이 밀리초 단위로 계산
+                        const diffMinutes = Math.floor(diffTime / (1000 * 60)); // 분 단위로 변환
+                        const diffHours = Math.floor(diffMinutes / 60); // 시간 단위로 변환
+                        const diffDays = Math.floor(diffHours / 24); // 일 단위로 변환
+                        return { diffMinutes, diffHours, diffDays };
+                    }
+
+                    let timeDiff = getTimeDifference(displayDate, currentDate);
+
+                    // 시간 차이에 따라 적절한 형식으로 표시
+                    let formattedDate;
+                    if (timeDiff.diffDays >= 1) {
+                        formattedDate = displayDate.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    } else if (timeDiff.diffHours >= 1) {
+                        formattedDate = `${timeDiff.diffHours}시간 전`;
+                    } else if (timeDiff.diffMinutes >= 1) {
+                        formattedDate = `${timeDiff.diffMinutes}분 전`;
+                    } else {
+                        formattedDate = '방금 전';
+                    }
+
+
                     content += '<div class="col">'
                     content += '<div class="card h-70">'
                     content += '<img src="/display?fileName=' + dto.imageDTO.thumbnailURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
                     content += '<div class="card-body">'
                     content += '<div class="row mb-2">'
                     content += '<div class="col-9">'
-                    content += '<h4 class="card-title">' + dto.title + '<span><small><b> (' + dto.replyCount + ')</b></small></span></h4>'
+                    content += '<h4 class="card-title">' + dto.title + '<span><small><b> (' + dto.replyCount + ')</b></small><input class="board_bno" type="hidden" value="'+ dto.bno +'"></span></h4>'
                     content += '</div>'
-                    content += '<p class="card-text">' + dto.writerEmail + '</p></div>'
+                    content += '<p class="card-text member_email">' + dto.writerEmail + '</p></div>'
                     dto.tags.forEach(tag => {
                         content += '<span class="card-text"><small>#' + tag + '   </small></span>'
                     });
-                    content += '<p class="card-text">Like : <b>' + dto.likeCount + '</b></p></div>'
+                    content += '<p class="card-text">Like : <b class="like-count">' + dto.likeCount + '  </b>'
+                    content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button></span></p></div>'
                     content += '<div class="card-footer">'
-                    content += '<small>' + (dto.regDate != dto.modDate ? dto.modDate : dto.regDate) + '</small>'
+
+                    content += '<small class="text-body-secondary">' + formattedDate + '</small>';
                     content += '</div></div></div>'
                 });
                 content += '</div>'
                 $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가
             }
-
         </script>
-
-
 </body>
 </html>

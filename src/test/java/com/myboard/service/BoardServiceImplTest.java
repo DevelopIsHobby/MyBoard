@@ -14,7 +14,7 @@ class BoardServiceImplTest {
 
     @Test
     public void testList() {
-        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(9).build();
         PageResultDTO<BoardDTO, Object[]> resultDTO = boardService.getList(pageRequestDTO);
 
         for(BoardDTO boardDTO : resultDTO.getDtoList()) {

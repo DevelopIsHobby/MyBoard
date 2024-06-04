@@ -7,12 +7,32 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.stream.IntStream;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootTest
 class RecommendationRepositoryTest {
     @Autowired
     private RecommendationRepository recommendationRepository;
+
+    @Test
+    public void existTest() {
+        Board board = Board.builder().bno(56l).build();
+        Member member = Member.builder().email("user10@aaa.com").build();
+        System.out.println(recommendationRepository.existsByBoardAndWriter(board, member));
+    }
+
+    @Test
+    public void findTest() {
+        Board board = Board.builder().bno(56l).build();
+        Member member = Member.builder().email("user10@aaa.com").build();
+
+        List<Object[]> result = recommendationRepository.findByBoardAndMember(board, member);
+
+        result.forEach(obj -> {
+            System.out.println(Arrays.toString(obj));
+        });
+    }
 
 
     @Test

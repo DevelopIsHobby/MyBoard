@@ -36,7 +36,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Modifying
     @Transactional
-    @Query(value="update board set like_count=:boardCount where bno=:bno", nativeQuery=true)
-    int updateQuery(@Param("boardCount") int boardCount, @Param("bno")long bno);
+    @Query(value="update board set like_count=like_count + :boardCount where bno=:bno", nativeQuery=true)
+    int updateLikeCount(@Param("boardCount") int boardCount, @Param("bno")long bno);
 
+    @Query(value="select bno from Board where bno=:bno")
+    Integer findByBno(@Param("bno") Long bno);
 }
