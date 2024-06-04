@@ -34,6 +34,7 @@ public interface BoardService {
                 .content(boardDTO.getContent())
                 .writer(Member.builder().email(boardDTO.getWriterEmail()).build())
                 .likeCount(boardDTO.getLikeCount())
+                .isScrapped(boardDTO.isScrapped())
                 .build();
 
         entitypMap.put("board", board);
@@ -68,6 +69,7 @@ public interface BoardService {
                 .modDate(board.getModDate())
                 .writerEmail(member.getEmail())
                 .replyCount(replyCount.intValue())
+                .isScrapped(board.isScrapped())
                 .build();
 
         BoardImageDTO boardImageDTO = BoardImageDTO.builder()

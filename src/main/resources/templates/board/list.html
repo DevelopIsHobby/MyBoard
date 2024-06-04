@@ -68,6 +68,33 @@
 
             $(document).ready(function() {
 
+                $(document).on('click', '.scrap-button', function() {
+                    const button = $(this);
+                    const board_bno = $(this).closest('.card').find('.board_bno').val();
+                    const member_email = $(this).closest('.card').find('.member_email').text();
+
+                    console.log(button);
+                    console.log(board_bno);
+                    console.log(member_email);
+
+                    let isScrapped = button.text() === 'UnScrap';
+
+                    const url = isScrapped ? `/scrap?bno=${board_bno}&writer=${member_email}` : `/cancelScrap?bno=${board_bno}&writer=${member_email}`;
+                    $.ajax({
+                        url: url,
+                        type: isScrapped ? "Post" : "Delete",
+                        success: function(response) {
+                            alert(response.msg); // 성공 메세지 출력
+                            button.text(isScrapped ? 'Scrapped' : 'UnScrap'); // 버튼 글자 업데이트
+                        },
+                        error: function(xhr, status, error) {
+                            alert("Error: " + error);
+                            isScrapped = !isScrapped;
+                        }
+                    })
+                })
+
+
                 // 추천 기능 구현
                 $(document).on('click', '.like-button', function() {
                     // 현재 클릭된 버튼의 부모 요소에서 board_bno와 member_email 값을 찾습니다.
@@ -119,7 +146,7 @@
                 loadMoreData(currentPage, pageSize); // 페이지 로드 시 초기 데이터 로드
 
                 $(window).scroll(function() {
-                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 20) {
+                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
                         currentPage++;
                         console.log(currentPage)
                         loadMoreData(currentPage, pageSize);
@@ -145,6 +172,10 @@
             function updateContent(data) {
                 let content = '<div class="row row-cols-1 row-cols-md-3 g-3 mt-1 list">';
                 data.forEach(dto => {
+                    //스크랩 상태를 저장하는 변수
+                    let isScrapped = dto.scrapped;
+                    let scrapText = isScrapped ? 'Scrapped' : 'UnScrap';
+
                     // Date 객체로 변환
                     let regDate = new Date(dto.regDate);
                     let modDate = new Date(dto.modDate);
@@ -189,11 +220,9 @@
                         content += '<span class="card-text"><small>#' + tag + '   </small></span>'
                     });
                     content += '<p class="card-text">Like : <b class="like-count">' + dto.likeCount + '  </b>'
-                    content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button></span></p></div>'
-                    content += '<div class="card-footer">'
-
-                    content += '<small class="text-body-secondary">' + formattedDate + '</small>';
-                    content += '</div></div></div>'
+                    content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button>'
+                    content += '<button class="btn btn-outline-success btn-sm scrap-button">' +  scrapText + '</button></span></p></div>'
+                    content += '<div class="card-footer"><small class="text-body-secondary">' + formattedDate + '</small></div></div></div>';
                 });
                 content += '</div>'
                 $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가

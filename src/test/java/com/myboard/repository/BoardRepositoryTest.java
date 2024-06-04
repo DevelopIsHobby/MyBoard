@@ -29,6 +29,11 @@ BoardRepositoryTest {
     private TagRepository tagRepository;
 
     @Test
+    public void getIsScrappedTest() {
+        int isScrapped = boardRepository.updateIsScrapped(true, 100l);
+    }
+
+    @Test
     public void increaseLikeCount() {
         boardRepository.updateLikeCount(-1,10l);
     }

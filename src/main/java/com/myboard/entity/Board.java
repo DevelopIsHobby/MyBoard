@@ -23,7 +23,10 @@ public class Board extends BaseEntity {
 
     private Integer likeCount;
 
+    private boolean isScrapped;
+
     public void setLikeCount(Integer likeCount) {
         this.likeCount = likeCount;
     }
+    public void setScrapped(boolean isScrapped) { this.isScrapped = isScrapped; }
 }
