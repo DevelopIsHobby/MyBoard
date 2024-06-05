@@ -47,7 +47,7 @@ BoardRepositoryTest {
 //    }
     @Test
     public void getBoardbyBno() {
-        List<Object[]> result = boardRepository.getBoardbyBno(10l);
+        List<Object[]> result = boardRepository.getBoardByBno(11l);
 
         for(Object[] arr : result) {
             System.out.println(Arrays.toString(arr));

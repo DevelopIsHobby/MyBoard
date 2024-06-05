@@ -13,5 +13,5 @@ public class BoardTagDTO {
 
     private Long tagnum;
 
-    private String name;
+    private String tags;
 }

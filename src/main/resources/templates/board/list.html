@@ -51,7 +51,7 @@
             <div class="mt-2 p-5 bg-secondary text-white rounded">
                 <h1>Board List Page</h1>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-                <a href="#" class="btn btn-primary btn-lg">Register</a>
+                <a th:href="@{/board/register}" class="btn btn-primary btn-lg">Register</a>
             </div>
 
 
@@ -68,6 +68,7 @@
 
             $(document).ready(function() {
 
+                // 스크랩 기능 구현
                 $(document).on('click', '.scrap-button', function() {
                     const button = $(this);
                     const board_bno = $(this).closest('.card').find('.board_bno').val();
@@ -135,12 +136,13 @@
                         error: function(xhr, status, error) {
                             console.log('Error: ', error);
                             clickedButton.data('isLiked', !isLiked);
+
+                            const updatedLikeCount = likeCount - 1;
+                            const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
+                            likeCountElement.text(updatedLikeCount);
                         }
                     });
                 })
-
-
-
 
                 // 무한스크롤 구현
                 loadMoreData(currentPage, pageSize); // 페이지 로드 시 초기 데이터 로드
@@ -209,11 +211,13 @@
 
                     content += '<div class="col">'
                     content += '<div class="card h-70">'
-                    content += '<img src="/display?fileName=' + dto.imageDTO.thumbnailURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
+                    if (dto.imageDTO && dto.imageDTO.thumbnailURL) {
+                        content += '<img src="/display?fileName=' + dto.imageDTO.thumbnailURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
+                    }
                     content += '<div class="card-body">'
                     content += '<div class="row mb-2">'
                     content += '<div class="col-9">'
-                    content += '<h4 class="card-title">' + dto.title + '<span><small><b> (' + dto.replyCount + ')</b></small><input class="board_bno" type="hidden" value="'+ dto.bno +'"></span></h4>'
+                    content += '<h4 class="card-title"><a class="listBtn" href="/board/read?bno='+dto.bno + '">'+ dto.title +'</a><span><small><b> (' + dto.replyCount + ')</b></small><input class="board_bno" type="hidden" value="'+ dto.bno +'"></span></h4>'
                     content += '</div>'
                     content += '<p class="card-text member_email">' + dto.writerEmail + '</p></div>'
                     dto.tags.forEach(tag => {

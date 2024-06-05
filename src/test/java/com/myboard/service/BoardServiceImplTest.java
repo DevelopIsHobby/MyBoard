@@ -12,6 +12,14 @@ class BoardServiceImplTest {
     @Autowired
     private BoardService boardService;
 
+
+    @Test
+    public void getTest() {
+        BoardDTO boardDTO = boardService.getBoard(11l);
+
+        System.out.println(boardDTO);
+    }
+
     @Test
     public void testList() {
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(9).build();

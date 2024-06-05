@@ -3,11 +3,8 @@ package com.myboard.service;
 import com.myboard.dto.BoardDTO;
 import com.myboard.dto.PageRequestDTO;
 import com.myboard.dto.PageResultDTO;
-import com.myboard.entity.Board;
-import com.myboard.entity.BoardImage;
-import com.myboard.entity.Member;
-import com.myboard.repository.BoardImageRepository;
-import com.myboard.repository.BoardRepository;
+import com.myboard.entity.*;
+import com.myboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -19,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -28,6 +26,11 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardImageRepository boardImageRepository;
 
+    private final MemberRepository memberRepository;
+
+    private final BoardTagMapRepository boardTagMapRepository;
+
+    private final TagRepository tagRepository;
 
     @Override
     public Long register(BoardDTO boardDTO) {
@@ -35,11 +38,33 @@ public class BoardServiceImpl implements BoardService {
         Board board = (Board) entityMap.get("board");
         List<BoardImage> boardImageList = (List<BoardImage>) entityMap.get("imgList");
 
+        Member writer = Member.builder()
+                .email(boardDTO.getWriterEmail())
+                        .password("1234")
+                                .nickName(boardDTO.getWriterEmail()).build();
+        memberRepository.save(writer);
+
         boardRepository.save(board);
 
-        boardImageList.forEach(boardImage -> {
-            boardImageRepository.save(boardImage);
-        });
+        if(boardDTO.getTags() != null) {
+            Tag tag = Tag.builder().name(boardDTO.getTags().stream().collect(Collectors.joining("#"))).build();
+            tagRepository.save(tag);
+
+            BoardTagMap boardTagMap = BoardTagMap.builder()
+                    .board(board)
+                    .tag(tag)
+                    .build();
+
+            boardTagMapRepository.save(boardTagMap);
+        }
+
+        if(boardImageList != null) {
+            boardImageList.forEach(boardImage -> {
+                boardImageRepository.save(boardImage);
+            });
+        }
+
+
         return board.getBno();
     }
 
@@ -79,11 +104,20 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDTO get(Long bno) {
-        Object result = boardRepository.getBoardbyBno(bno);
+    public BoardDTO getBoard(Long bno) {
+        List<Object[]> result = boardRepository.getBoardByBno(bno);
 
-        Object[] arr = (Object[]) result;
+        Board board = (Board) result.get(0)[0];
+        Member member = (Member) result.get(0)[1];
 
-        return null;
+        List<BoardImage> boardImageList = new ArrayList<>();
+        result.forEach(arr -> {
+            BoardImage boardImage = (BoardImage) arr[2];
+            boardImageList.add(boardImage);
+        });
+
+        Long reviewCnt = (Long) result.get(0)[3];
+
+        return entityToDTOWithImages(board, member, boardImageList, reviewCnt);
     }
 }

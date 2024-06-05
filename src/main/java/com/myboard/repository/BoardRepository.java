@@ -13,12 +13,20 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query(value = "select b, w,bi, count(distinct r) from Board b " +
+//    @Query(value = "select b, w,bi, count(distinct r) from Board b " +
+//            "left join b.writer w " +
+//            "left join BoardImage bi on b=bi.board " +
+//            "left join Review r on r.board = b " +
+//            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b)" +
+//            "group by b, bi, w")
+//    Page<Object[]> getList(Pageable pageable);
+
+    @Query(value = "select b, w, bi, count(distinct r) from Board b " +
             "left join b.writer w " +
-            "left join BoardImage bi on b=bi.board " +
+            "left join BoardImage bi on bi.board = b and " +
+            "bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board = b) " +
             "left join Review r on r.board = b " +
-            "where bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board=b)" +
-            "group by b, bi, w")
+            "group by b, w, bi")
     Page<Object[]> getList(Pageable pageable);
 
     @Query(value="select t.name from BoardTagMap bt " +
@@ -26,13 +34,19 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             "where bt.board.bno =:bno group by t.name order by bt.board.bno")
     Object[] getTagByBno(@Param("bno") Long bno);
 
-    @Query(value = "select b, w,bi, count(distinct r) from Board b " +
+//    @Query(value = "select b, w, bi, count(distinct r) from Board b " +
+//            "left join b.writer w " +
+//            "left join BoardImage bi on bi.board = b and " +
+//            "bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board = b) " +
+//            "left join Review r on r.board = b where b.bno=:bno " +
+//            "group by b, w, bi")
+    @Query(value = "select b, w, bi, count(distinct r) from Board b " +
             "left join b.writer w " +
-            "left join BoardImage bi on b=bi.board " +
+            "left join BoardImage bi on bi.board = b " +
             "left join Review r on r.board = b " +
-            "where b.bno=:bno group by b, bi, w order by b.bno")
-    List<Object[]> getBoardbyBno(@Param("bno") Long bno);
-
+            "where b.bno = :bno " +
+            "group by b, w, bi")
+    List<Object[]> getBoardByBno(@Param("bno") Long bno);
 
     @Modifying
     @Transactional

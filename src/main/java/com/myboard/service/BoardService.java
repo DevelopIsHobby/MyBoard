@@ -22,7 +22,7 @@ public interface BoardService {
 
     void updateCount(Board board, Boolean likeBoolean);
 
-    BoardDTO get(Long bno);
+    BoardDTO getBoard(Long bno);
 
     // Map 타입으로 반환
     default Map<String, Object> dtoToEntity(BoardDTO boardDTO) {
@@ -59,7 +59,9 @@ public interface BoardService {
         return entitypMap;
     }
 
+    // 대표 화면용
     default BoardDTO entityToDTO(Board board, Member member, BoardImage boardImage, Long replyCount){
+        if(board.getLikeCount() == null) { board.setLikeCount(0);}
         BoardDTO boardDTO = BoardDTO.builder()
                 .bno(board.getBno())
                 .title(board.getTitle())
@@ -72,13 +74,55 @@ public interface BoardService {
                 .isScrapped(board.isScrapped())
                 .build();
 
-        BoardImageDTO boardImageDTO = BoardImageDTO.builder()
-                                .uuid(boardImage.getUuid())
-                                .imgName(boardImage.getImgName())
-                                        .path(boardImage.getPath())
-                                                .build();
+        if(boardImage != null) {
+            BoardImageDTO boardImageDTO = BoardImageDTO.builder()
+                    .uuid(boardImage.getUuid())
+                    .imgName(boardImage.getImgName())
+                    .path(boardImage.getPath())
+                    .build();
 
-        boardDTO.setImageDTO(boardImageDTO);
+            boardDTO.setImageDTO(boardImageDTO);
+        }
+
+        return boardDTO;
+    }
+
+    // 조회 화면용
+    default BoardDTO entityToDTOWithImages(Board board, Member member, List<BoardImage> boardImages, Long replyCount){
+        if(board.getLikeCount() == null) { board.setLikeCount(0);}
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(board.getBno())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .likeCount(board.getLikeCount())
+                .regDate(board.getRegDate())
+                .modDate(board.getModDate())
+                .writerEmail(member.getEmail())
+                .replyCount(replyCount.intValue())
+                .isScrapped(board.isScrapped())
+                .build();
+
+
+        if(boardImages != null) {
+            List<BoardImageDTO> boardImageDTOList = boardImages.stream()
+                    .map(boardImage -> {
+                        if(boardImage != null) {
+                            return BoardImageDTO.builder()
+                                    .path(boardImage.getPath())
+                                    .imgName(boardImage.getImgName())
+                                    .uuid(boardImage.getUuid())
+                                    .build();
+                        } else {
+                            return  BoardImageDTO.builder()
+                                    .path(null)
+                                    .imgName("no image")
+                                    .uuid(null)
+                                    .build();
+                        }
+                    }).collect(Collectors.toUnmodifiableList());
+
+            boardDTO.setImageDTOList(boardImageDTOList);
+        }
 
         return boardDTO;
     }

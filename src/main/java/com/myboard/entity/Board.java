@@ -21,7 +21,7 @@ public class Board extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member writer;
 
-    private Integer likeCount;
+    private Integer likeCount=0;
 
     private boolean isScrapped;
 

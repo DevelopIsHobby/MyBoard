@@ -66,57 +66,54 @@
         </div>
     </div>
 
-    <h1 class="text-center">Board Modify Page</h1>
+    <h1 class="text-center">Board Read Page</h1>
     <div class="col-6 offset-3">
-        <form action="/board/modify" method="post">
-            <div class="mb-3">
-                <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="title" th:value="${board.title}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="">Content</label>
-                <textarea class="form-control" name="content" id="" cols="20" rows="5" >[[${board.content}]]</textarea>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label" for="tags"><small>Tags</small></label>
-                <input class="form-control" type="text" id="tags" name="tags" th:value="'#' + ${tags}" readonly>
-            </div>
-
-
-            <div class="mb-3">
-                <label class="form-label" for="" >Writer</label>
-                <input class="form-control" type="text" id="writer" name="writerEmail" th:value="${board.writerEmail}" readonly>
-            </div>
-
-
-            <div class="mb-3">
-                <label class="form-label" for="" >ModDate</label>
-                <input class="form-control" type="text"  name="modDate" th:value="${board.modDate}" readonly>
-            </div>
-
-            <button type="button" class="btn btn-primary modifyBtn">Modify</button>
-            <button type="button" class="btn btn-info listBtn">List</button>
-            <button type="button" class="btn btn-danger removeBtn">Remove</button>
-
-            <div class="uploadResult">
-                <ul>
-                    <li th:each="boardImage : ${board.imageDTOList}">
-                        <!--                    <img th:if="${boardImage.path != null}" th:src="|/display?fileName=${boardImage.getThumbnailURL()}|">-->
-                        <input class="form-control" type="text"  name="imgName" th:value="${boardImage.imgName}">
-                    </li>
-                </ul>
-            </div>
-
-        </form>
-
-        <div class="mt-4">
-            <h5>
-                <span class="badge text-bg-secondary">Reply Count 0</span>
-            </h5>
+        <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control" type="text" id="title" name="title" th:value="${board.title}" readonly>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="">Content</label>
+            <textarea class="form-control" name="content" id="" cols="20" rows="5" readonly>[[${board.content}]]</textarea>
         </div>
 
-        <div class="light-group replyList"></div>
+        <div class="mb-3">
+            <label class="form-label" for="tags"><small>Tags</small></label>
+            <input class="form-control" type="text" id="tags" name="tags" th:value="'#' + ${tags}" readonly>
+        </div>
+
+
+        <div class="mb-3">
+            <label class="form-label" for="" >Writer</label>
+            <input class="form-control" type="text" id="writer" name="writerEmail" th:value="${board.writerEmail}" readonly>
+        </div>
+
+
+        <div class="mb-3">
+            <label class="form-label" for="" >ModDate</label>
+            <input class="form-control" type="text"  name="modDate" th:value="${board.modDate}" readonly>
+        </div>
+        <a th:href="@{/board/modify(bno=${board.bno})}">
+            <button type="button" class="btn btn-primary">Modify</button>
+        </a>
+
+        <button type="button" class="btn btn-info listBtn">List</button>
+        <div class="uploadResult">
+            <ul>
+                <li th:each="boardImage : ${board.imageDTOList}">
+<!--                    <img th:if="${boardImage.path != null}" th:src="|/display?fileName=${boardImage.getThumbnailURL()}|">-->
+                    <input class="form-control" type="text"  name="imgName" th:value="${boardImage.imgName}" readonly>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <div class="mt-4">
+                <h5>
+                    <span class="badge text-bg-secondary">Reply Count 0</span>
+                </h5>
+            </div>
+
+            <div class="light-group replyList"></div>
 
         </div>
 
@@ -125,6 +122,7 @@
 </div>
 
 <script>
+
     // 현재 시간과의 차이를 계산하여 포맷팅하는 함수
     function formatTimeDifference(dateString) {
         const date = new Date(dateString);
@@ -160,26 +158,6 @@
             window.history.back(); // 브라우저의 이전 페이지로 이동
         });
     });
-</script>
-<script th:inline="javascript">
-    var actionForm = $("form") // form 태그선택
-
-    $(".removeBtn").click(function() {
-        actionForm.attr("action", "/board/remove")
-            .attr("method", "post")
-
-        actionForm.submit();
-    })
-
-    $(".modifyBtn").click(function() {
-        if(!confirm("수정하시겠습니까?")) {
-            return;
-        }
-
-        actionForm.attr("action", "/board/modify")
-            .attr("method","post")
-            .submit();
-    })
 </script>
 </body>
 </html>
