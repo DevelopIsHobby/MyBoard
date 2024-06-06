@@ -1,6 +1,7 @@
 package com.myboard.repository;
 
 import com.myboard.entity.Board;
+import com.myboard.repository.search.SearchBoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>, SearchBoardRepository {
 
 //    @Query(value = "select b, w,bi, count(distinct r) from Board b " +
 //            "left join b.writer w " +
