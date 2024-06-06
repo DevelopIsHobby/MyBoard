@@ -29,6 +29,11 @@ BoardRepositoryTest {
     private TagRepository tagRepository;
 
     @Test
+    public void testSearch() {
+        boardRepository.search();
+    }
+
+    @Test
     public void getIsScrappedTest() {
         int isScrapped = boardRepository.updateIsScrapped(true, 100l);
     }
