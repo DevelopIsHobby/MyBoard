@@ -24,6 +24,10 @@ public interface BoardService {
 
     BoardDTO getBoard(Long bno);
 
+    void removeBoards(Long bno);
+
+    void modifyBoards(BoardDTO boardDTO);
+
     // Map 타입으로 반환
     default Map<String, Object> dtoToEntity(BoardDTO boardDTO) {
         Map<String, Object> entitypMap = new HashMap<>();
@@ -80,7 +84,6 @@ public interface BoardService {
                     .imgName(boardImage.getImgName())
                     .path(boardImage.getPath())
                     .build();
-
             boardDTO.setImageDTO(boardImageDTO);
         }
 

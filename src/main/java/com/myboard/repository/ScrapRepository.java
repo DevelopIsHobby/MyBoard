@@ -21,4 +21,8 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     @Transactional
     @Query("delete from Scrap where board=:board and member=:member")
     void deleteScrapByBoardAndMember(@Param("board") Board board,@Param("member") Member member);
+
+    @Modifying
+    @Query(value="delete from Scrap where board.bno=:bno")
+    void deleteByBno(Long bno);
 }

@@ -30,6 +30,24 @@
         .uploadResult ul li img {
             width : 100px;
         }
+        .image-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .delete-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            color: red;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .image-container img {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +109,7 @@
 
             <div class="form-group fileForm">
                 <div class="box"></div>
-                <label for="fileInput">Image Files</label>
+                <label class="form-label" for="fileInput">Image Files</label>
                 <div class="custom-file">
                     <input type="file" class="custom-file-input files form-control" id="fileInput" name="files" multiple>
                     <label class="custom-file-label form-label" data-browse="Browse"></label>
@@ -104,7 +122,7 @@
                 </ul>
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary registerBtn">Register</button>
 
         </form>
 
@@ -134,12 +152,9 @@
                 var str = "";
 
                 $(uploadResultArr).each(function(i, obj) {
-                    str += "<li data-name='" + obj.fileName + "' data-path='" + obj.folderPath + "' data-uuid='" + obj.uuid+"'>";
-                    str += " <div>";
-                    str += "<button type='button' data-file=\'" + obj.imageURL + "\' ";
-                    str += "class='btn-warning btn-sm'>X</button><br>";
-                    str += "<img src='/display?fileName=" + obj.thumbnailURL + "'>";
-                    str += "</div>"
+                    str += "<li class=\"image-container\" data-name='" + obj.fileName + "' data-path='" + obj.folderPath + "' data-uuid='" + obj.uuid+"'>";
+                    str += "<button type='button' data-file=\'" + obj.imageURL + "\' class='delete-button btn-warning btn-sm'>X</button>";
+                    str += "<img src='/display?fileName=" + obj.thumbnailURL + "' height=\"100\"> ";
                     str += "</li>";
                 })
                 uploadUL.append(str);
@@ -213,7 +228,7 @@
             })
 
             // prevent submit
-            $(".btn-primary").on("click", function(e) {
+            $(".registerBtn").on("click", function(e) {
                 e.preventDefault();
 
                 var str = "";

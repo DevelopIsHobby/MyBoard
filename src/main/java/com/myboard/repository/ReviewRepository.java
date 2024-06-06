@@ -20,4 +20,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Transactional
     @Query("delete from Review mr where mr.reviewer=:member and mr.board.bno=:bno")
     void deleteByMember(@Param("member") Member member, @Param("bno")Long bno);
+
+    @Modifying
+    @Query("delete from Review where board.bno=:bno")
+    void deleteByBno(Long bno);
 }

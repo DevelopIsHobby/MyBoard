@@ -30,7 +30,7 @@ public class BoardController {
 
     @GetMapping({"/read","/modify"})
     public void read(long bno, @ModelAttribute("requestDTO") PageRequestDTO requestDTO, Model model) {
-        log.info("Read...........");
+        log.info("Read or Modify...........");
 
         BoardDTO boardDTO = boardService.getBoard(bno);
 
@@ -40,6 +40,30 @@ public class BoardController {
 
         model.addAttribute("board", boardDTO);
         model.addAttribute("tags", tags);
+    }
+
+    @PostMapping("/remove")
+    public String remove(Long bno, RedirectAttributes rattr) {
+        log.info("Remove......");
+        long msg = bno;
+        boardService.removeBoards(bno);
+        rattr.addFlashAttribute("deleteMsg", msg);
+
+        return "redirect:/board/list";
+    }
+
+    @PostMapping("/modify")
+    public String modify(BoardDTO boardDTO, RedirectAttributes rattr) {
+        log.info("modify method post.............");
+
+        log.info("boardDTO : " + boardDTO);
+
+        boardService.modifyBoards(boardDTO);
+
+        rattr.addAttribute("bno", boardDTO.getBno());
+        rattr.addFlashAttribute("modifyMsg",boardDTO.getBno());
+
+        return "redirect:/board/read";
     }
 
     @GetMapping("/register")
@@ -63,7 +87,7 @@ public class BoardController {
 
         Long bno = boardService.register(boardDTO);
 
-        rattr.addFlashAttribute("msg", bno);
+        rattr.addFlashAttribute("registerMsg", bno);
 
         return "redirect:/board/list";
     }

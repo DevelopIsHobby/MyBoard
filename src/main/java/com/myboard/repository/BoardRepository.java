@@ -60,4 +60,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query(value="select bno from Board where bno=:bno")
     Integer findByBno(@Param("bno") Long bno);
+
+    @Modifying
+    @Query(value="delete from Board where bno=:bno")
+    void deleteByBno(Long bno);
 }

@@ -11,7 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +25,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
-
     private final BoardImageRepository boardImageRepository;
-
     private final MemberRepository memberRepository;
-
     private final BoardTagMapRepository boardTagMapRepository;
-
     private final TagRepository tagRepository;
+    private final RecommendationRepository recommendationRepository;
+    private final ReviewRepository reviewRepository;
+    private final ScrapRepository scrapRepository;
 
     @Override
     public Long register(BoardDTO boardDTO) {
@@ -119,5 +120,56 @@ public class BoardServiceImpl implements BoardService {
         Long reviewCnt = (Long) result.get(0)[3];
 
         return entityToDTOWithImages(board, member, boardImageList, reviewCnt);
+    }
+
+    @Override
+    @Transactional
+    public void removeBoards(Long bno) {
+        log.info("remveService.........");
+        // 이미지
+        boardImageRepository.deleteByBno(bno);
+        // 태그 -> 태그
+        boardTagMapRepository.deleteByBno(bno);
+        boardTagMapRepository.deleteOrphanTags();
+        // 추천
+        recommendationRepository.deleteByBno(bno);
+        // 리뷰
+        reviewRepository.deleteByBno(bno);
+        // 스크랩
+        scrapRepository.deleteByBno(bno);
+
+        // 게시판
+        boardRepository.deleteByBno(bno);
+    }
+
+    @Override
+    @Transactional
+    public void modifyBoards(BoardDTO boardDTO) {
+        Map<String, Object> entityMap = dtoToEntity(boardDTO);
+        Board board = (Board) entityMap.get("board");
+        List<BoardImage> boardImageList = (List<BoardImage>) entityMap.get("imgList");
+
+        boardRepository.save(board);
+
+
+        if(boardDTO.getTags() != null) {
+            Tag tag = Tag.builder().name(boardDTO.getTags().stream().collect(Collectors.joining("#"))).build();
+
+            tagRepository.save(tag);
+            BoardTagMap boardTagMap = BoardTagMap.builder()
+                    .board(board)
+                    .tag(tag)
+                    .build();
+
+            boardTagMapRepository.deleteByBno(board.getBno());
+            boardTagMapRepository.save(boardTagMap);
+        }
+
+        if(boardImageList != null) {
+            boardImageRepository.deleteByBno(board.getBno());
+            boardImageList.forEach(boardImage -> {
+                boardImageRepository.save(boardImage);
+            });
+        }
     }
 }

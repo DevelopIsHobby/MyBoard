@@ -60,11 +60,34 @@
             </div>
 
         </div>
-
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script th:inline="javascript">
+            var deleteMsg = [[${deleteMsg}]];
+            if(deleteMsg) {
+                alert(deleteMsg + "번째 게시물이 삭제되었습니다.");
+                deleteMsg="";
+            }
+            var registerMsg = [[${registerMsg}]];
+            if(registerMsg) {
+                alert(registerMsg + "번째 게시물이 등록되었습니다..");
+                registerMsg="";
+            }
+            /*<![CDATA[*/
+            var tagsInput = document.getElementById('tags');
+            var tags = /*[[${tags}]]*/ '';
+
+            // 맨 앞에 '#'이 없는 경우 추가
+            if (tags && !tags.startsWith('#')) {
+                tags = '#' + tags;
+            }
+
+            tagsInput.value = tags;
+            /*]]>*/
+        </script>
         <script>
             let currentPage = 1;
             const pageSize = 9; // 한 번에 가져올 데이터의 개수
+
 
             $(document).ready(function() {
 
@@ -154,6 +177,12 @@
                         loadMoreData(currentPage, pageSize);
                     }
                 });
+
+                // 페이지를 떠날 때 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+                window.addEventListener("beforeunload", function() {
+                    // 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+                    sessionStorage.setItem("scrollPosition", window.scrollY);
+                });
             });
 
             function loadMoreData(page, size) {
@@ -212,7 +241,7 @@
                     content += '<div class="col">'
                     content += '<div class="card h-70">'
                     if (dto.imageDTO && dto.imageDTO.thumbnailURL) {
-                        content += '<img src="/display?fileName=' + dto.imageDTO.thumbnailURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
+                        content += '<img src="/display?fileName=' + dto.imageDTO.imageURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
                     }
                     content += '<div class="card-body">'
                     content += '<div class="row mb-2">'
@@ -221,7 +250,7 @@
                     content += '</div>'
                     content += '<p class="card-text member_email">' + dto.writerEmail + '</p></div>'
                     dto.tags.forEach(tag => {
-                        content += '<span class="card-text"><small>#' + tag + '   </small></span>'
+                        content += '<span class="card-text"><small>' + tag + '   </small></span>'
                     });
                     content += '<p class="card-text">Like : <b class="like-count">' + dto.likeCount + '  </b>'
                     content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button>'

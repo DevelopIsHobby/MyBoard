@@ -30,6 +30,30 @@
         .uploadResult ul li img {
             width : 100px;
         }
+        .bigPictureWrapper {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        .bigPicture {
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .bigPicture img {
+            max-width: 100%;
+            max-height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +103,7 @@
 
         <div class="mb-3">
             <label class="form-label" for="tags"><small>Tags</small></label>
-            <input class="form-control" type="text" id="tags" name="tags" th:value="'#' + ${tags}" readonly>
+            <input class="form-control" type="text" id="tags" name="tags" th:value="${tags}" readonly>
         </div>
 
 
@@ -98,14 +122,23 @@
         </a>
 
         <button type="button" class="btn btn-info listBtn">List</button>
+
         <div class="uploadResult">
             <ul>
                 <li th:each="boardImage : ${board.imageDTOList}">
-<!--                    <img th:if="${boardImage.path != null}" th:src="|/display?fileName=${boardImage.getThumbnailURL()}|">-->
-                    <input class="form-control" type="text"  name="imgName" th:value="${boardImage.imgName}" readonly>
+                    <a href="javascript:void(0);" th:data-image-url="${boardImage.getImageURL()}" class="image-link">
+                        <img th:if="${boardImage.path != null}" th:src="|/display?fileName=${boardImage.getThumbnailURL()}|">
+                    </a>
+<!--                    <input class="form-control" type="text"  name="imgName" th:value="${boardImage.imgName}" readonly>-->
                 </li>
             </ul>
         </div>
+
+        <!-- Big Picture Wrapper -->
+        <div class="bigPictureWrapper">
+            <div class="bigPicture"></div>
+        </div>
+
         <div>
             <div class="mt-4">
                 <h5>
@@ -120,9 +153,49 @@
 
     </div>
 </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var modifyMsg = [[${modifyMsg}]];
+        if (modifyMsg) {
+            alert(modifyMsg + "번째 게시물이 수정되었습니다.");
+            modifyMsg="";
+        }
+        var tagsInput = document.getElementById('tags');
+        var tags = /*[[${tags}]]*/ '';
 
+        // 맨 앞에 '#'이 없는 경우 추가
+        if (tags && !tags.startsWith('#')) {
+            tags = '#' + tags;
+        }
+
+        tagsInput.value = tags;
+        /*]]>*/
+    </script>
 <script>
-
+    // 원본이미지를 animation으로 보여준다.
+    // 외부에서 호출할 수 있도록 $(document).ready()의 바깥쪽에 작성한다.
+    function showImage(fileCallPath) {
+        $(".bigPictureWrapper").css("display", "flex").show();
+        $(".bigPicture").html("<img src='/display?fileName=" + encodeURI(fileCallPath) + "'>").animate({
+            width: '100%',
+            height: '100%'
+        }, 1000);
+        $(".bigPictureWrapper").on("click", function (e) {
+            $(".bigPicture").animate({width: '0%', height: '0%'}, 1000)
+            setTimeout(() => {
+                $(".bigPictureWrapper").hide()
+            }, 1000)
+        })
+    }
+    $(document).ready(function() {
+        $(".image-link").on("click", function() {
+            var imageUrl = $(this).data("image-url");
+            showImage(imageUrl);
+        });
+    });
+</script>
+<script>
     // 현재 시간과의 차이를 계산하여 포맷팅하는 함수
     function formatTimeDifference(dateString) {
         const date = new Date(dateString);
@@ -151,11 +224,21 @@
         modDateInput.value = formattedDate;
 
 
-        // 무한스크롤 원래 있던 스크롤 위치 복원(뒤로가기 구현)
-        const listButton = document.querySelector(".listBtn");
-
-        listButton.addEventListener("click", function() {
-            window.history.back(); // 브라우저의 이전 페이지로 이동
+        // read.html 페이지의 list 버튼 클릭 이벤트 핸들러
+        document.querySelector(".listBtn").addEventListener("click", function() {
+            // 세션 스토리지에서 이전 페이지의 스크롤 위치를 가져옵니다.
+            var scrollPosition = sessionStorage.getItem("scrollPosition");
+            if (scrollPosition) {
+                // 이전 페이지의 스크롤 위치로 스크롤을 이동합니다.
+                window.scrollTo(0, parseInt(scrollPosition));
+            }
+            // 브라우저의 이전 페이지로 이동합니다.
+            window.history.back();
+        });
+        // 페이지를 떠날 때 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+        window.addEventListener("beforeunload", function() {
+            // 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+            sessionStorage.setItem("scrollPosition", window.scrollY);
         });
     });
 </script>

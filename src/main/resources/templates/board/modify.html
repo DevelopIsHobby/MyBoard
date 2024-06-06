@@ -30,6 +30,24 @@
         .uploadResult ul li img {
             width : 100px;
         }
+        .image-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .delete-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            color: red;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .image-container img {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +86,9 @@
 
     <h1 class="text-center">Board Modify Page</h1>
     <div class="col-6 offset-3">
-        <form action="/board/modify" method="post">
+        <form action="" method="post">
+            <input type="hidden" name="bno" th:value="${board.bno}">
+
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="title" th:value="${board.title}">
@@ -80,7 +100,7 @@
 
             <div class="mb-3">
                 <label class="form-label" for="tags"><small>Tags</small></label>
-                <input class="form-control" type="text" id="tags" name="tags" th:value="'#' + ${tags}" readonly>
+                <input class="form-control" type="text" id="tags" name="tags" th:value="${tags}">
             </div>
 
 
@@ -92,21 +112,34 @@
 
             <div class="mb-3">
                 <label class="form-label" for="" >ModDate</label>
-                <input class="form-control" type="text"  name="modDate" th:value="${board.modDate}" readonly>
+                <input class="form-control" type="text"  name="updateDate" th:value="${board.modDate}" readonly>
             </div>
+
+            <div class="form-group fileForm">
+                <div class="box"></div>
+                <label class="form-label" for="fileInput">Add Image Files</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input files form-control" id="fileInput" name="files" multiple onchange="previewImages()">
+                    <label class="custom-file-label form-label" data-browse="Browse"></label>
+                </div>
+            </div>
+
+            <div class="uploadResult">
+                <ul>
+                    <li th:each="boardImage : ${board.imageDTOList}" class="image-container" th:attr="data-name=${boardImage.imgName}, data-path=${boardImage.path}, data-uuid=${boardImage.uuid}">
+                        <button type="button" class="delete-button btn-warning btn-sm" th:attr="data-file=${boardImage.imageURL}">X</button>
+                        <img th:if="${boardImage.path != null}" th:src="@{|/display?fileName=${boardImage.thumbnailURL}|}" height="100">
+                    </li>
+                </ul>
+            </div>
+
+
 
             <button type="button" class="btn btn-primary modifyBtn">Modify</button>
             <button type="button" class="btn btn-info listBtn">List</button>
             <button type="button" class="btn btn-danger removeBtn">Remove</button>
 
-            <div class="uploadResult">
-                <ul>
-                    <li th:each="boardImage : ${board.imageDTOList}">
-                        <!--                    <img th:if="${boardImage.path != null}" th:src="|/display?fileName=${boardImage.getThumbnailURL()}|">-->
-                        <input class="form-control" type="text"  name="imgName" th:value="${boardImage.imgName}">
-                    </li>
-                </ul>
-            </div>
+
 
         </form>
 
@@ -123,7 +156,7 @@
 
     </div>
 </div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     // 현재 시간과의 차이를 계산하여 포맷팅하는 함수
     function formatTimeDifference(dateString) {
@@ -148,25 +181,45 @@
 
     // 페이지가 로드되면 날짜를 형식화합니다.
     document.addEventListener('DOMContentLoaded', function () {
-        const modDateInput = document.querySelector('input[name="modDate"]');
+        const modDateInput = document.querySelector('input[name="updateDate"]');
         const formattedDate = formatTimeDifference(modDateInput.value);
         modDateInput.value = formattedDate;
 
 
-        // 무한스크롤 원래 있던 스크롤 위치 복원(뒤로가기 구현)
-        const listButton = document.querySelector(".listBtn");
-
-        listButton.addEventListener("click", function() {
-            window.history.back(); // 브라우저의 이전 페이지로 이동
+        // modify.html 페이지의 list 버튼 클릭 이벤트 핸들러
+        document.querySelector(".listBtn").addEventListener("click", function() {
+            // 세션 스토리지에서 이전 페이지의 스크롤 위치를 가져옵니다.
+            var scrollPosition = sessionStorage.getItem("scrollPosition");
+            if (scrollPosition) {
+                // 이전 페이지의 스크롤 위치로 스크롤을 이동합니다.
+                window.scrollTo(0, parseInt(scrollPosition));
+            }
+            // 브라우저의 이전 페이지로 이동합니다.
+            window.history.back();
+            window.history.back();
         });
     });
 </script>
 <script th:inline="javascript">
+    /*<![CDATA[*/
+    var tagsInput = document.getElementById('tags');
+    var tags = /*[[${tags}]]*/ '';
+
+    // 맨 앞에 '#'이 없는 경우 추가
+    if (tags && !tags.startsWith('#')) {
+        tags = '#' + tags;
+    }
+
+    tagsInput.value = tags;
+    /*]]>*/
     var actionForm = $("form") // form 태그선택
 
     $(".removeBtn").click(function() {
         actionForm.attr("action", "/board/remove")
             .attr("method", "post")
+        var bno = $("input[name=bno]").val();
+        console.log(bno);
+        if(!confirm("정말로 삭제하시겠습니까?")) return;
 
         actionForm.submit();
     })
@@ -176,10 +229,138 @@
             return;
         }
 
+        // 현재 시간을 JavaScript의 Date 객체로 가져오기
+        var currentDate = new Date();
+
+        // 현재 시간을 ISO 8601 형식(YYYY-MM-DDTHH:MM:SS)으로 변환
+        var formattedDate = currentDate.toISOString();
+
+        // ISO 8601 형식에서 'T'와 'Z'를 제거하고 공백으로 대체하여 LocalDateTime 형식으로 변환
+        formattedDate = formattedDate.replace('T', ' ').replace('Z', '');
+
+        // modDate 필드를 현재 시간으로 설정
+        actionForm.find("input[name='modDate']").val(formattedDate);
+
         actionForm.attr("action", "/board/modify")
             .attr("method","post")
             .submit();
     })
+</script>
+<script>
+    $(document).ready(function(e) {
+        var regex = new RegExp("(.*?)\.(exe|sh|zip|alz|tiff)$");
+        var maxSize = 10485760; // 10MB
+
+        function checkExtension(fileName, fileSize) {
+            if(fileSize >= maxSize) {
+                alert("파일 사이즈 초과");
+                return false;
+            }
+
+            if(regex.test(fileName)) {
+                alert("해당 종류의 파일은 업로드할 수 없습니다.");
+                return false;
+            }
+            return true;
+        }
+        function showResult(uploadResultArr) {
+            var uploadUL = $(".uploadResult ul");
+            var str = "";
+
+            $(uploadResultArr).each(function(i, obj) {
+                str += "<li class=\"image-container\" data-name='" + obj.fileName + "' data-path='" + obj.folderPath + "' data-uuid='" + obj.uuid+"'>";
+                str += "<button type='button' data-file=\'" + obj.imageURL + "\' class='delete-button btn-warning btn-sm'>X</button>";
+                str += "<img src='/display?fileName=" + obj.thumbnailURL + "' height=\"100\"> ";
+                str += "</li>";
+            })
+            uploadUL.append(str);
+        }
+
+
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+
+            var formData = new FormData();
+
+            var inputFile = $(this);
+
+            var files = inputFile[0].files;
+
+            var appended = false;
+
+            for( var i=0; i<files.length; i++) {
+                if(!checkExtension(files[i].name, files[i].size)) {
+                    return false;
+                }
+                console.log(files[i]);
+                formData.append("uploadFiles", files[i]);
+                appended = true;
+            }
+            // upload를 하지 않는다.
+            if(!appended) {return;}
+
+            for(var value of formData.values()) {
+                console.log(value);
+            }
+
+            // 실제 업로드를 하는 부분
+            // upload ajax
+            $.ajax({
+                url:'/uploadAjax',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                dataType : 'json',
+                success : function(result) {
+                    console.log(result);
+                    showResult(result);
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus);
+                }
+            }); // end $.ajax
+        })
+
+        $(".uploadResult").on("click", "li button", function(e) {
+            console.log("Delete file")
+
+            var targetFile = $(this).data("file");
+
+            var targetLi = $(this).closest("li");
+
+
+            $.ajax({
+                url:'/removeFile',
+                data : {fileName:targetFile},
+                type : 'POST',
+                dataType : 'text',
+                success : function(result) {
+                    alert(result)
+                    targetLi.remove();
+                }
+            }); // end $.ajax
+        })
+
+        // prevent submit
+        $(".btn-primary").on("click", function(e) {
+            e.preventDefault();
+
+            var str = "";
+
+            $(".uploadResult li").each(function(i, obj) {
+                var target = $(obj);
+                str += "<input type='hidden' name='imageDTOList[" + i + "].imgName' value='" + target.data('name') + "'>";
+                str += "<input type='hidden' name='imageDTOList[" + i + "].path' value='" + target.data('path') + "'>";
+                str += "<input type='hidden' name='imageDTOList[" + i + "].uuid' value='" + target.data('uuid') + "'>";
+            })
+            // 태그들이 추가된 것을 확인한 후에 comment를 제거
+            $(".box").html(str);
+
+            $("form").submit();
+        })
+    }) // document ready
 </script>
 </body>
 </html>

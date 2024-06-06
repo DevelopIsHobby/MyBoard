@@ -7,11 +7,35 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SpringBootTest
 class BoardServiceImplTest {
     @Autowired
     private BoardService boardService;
 
+    @Test
+    public void testModify() {
+        List<String> tags = new ArrayList<>();
+        tags.add("#Changed");
+        tags.add("#Modified");
+
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(99l)
+                .writerEmail("user99@aaa.com")
+                .title("제목을 변경합니다.")
+                .content("내용을 변경합니다.")
+                .tags(tags)
+                .build();
+
+        boardService.modifyBoards(boardDTO);
+    }
+
+    @Test
+    public void testRemove() {
+        boardService.removeBoards(102l);
+    }
 
     @Test
     public void getTest() {

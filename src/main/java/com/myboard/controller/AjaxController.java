@@ -35,7 +35,7 @@ public class AjaxController {
             resultWithTags.add(boardService.getTags(boardDTO));
         }
         result.setDtoList(resultWithTags);
-        System.out.println("result = " + result);
+//        System.out.println("result = " + result);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

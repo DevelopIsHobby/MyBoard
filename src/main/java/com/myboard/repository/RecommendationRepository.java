@@ -21,4 +21,8 @@ public interface RecommendationRepository extends JpaRepository<Recommendation, 
     @Transactional
     @Query("delete from Recommendation where board=:board and writer=:writer")
     void recommendationCancel(@Param("board") Board board,@Param("writer") Member writer);
+
+    @Modifying
+    @Query("delete from Recommendation where board.bno=:bno")
+    void deleteByBno(Long bno);
 }
