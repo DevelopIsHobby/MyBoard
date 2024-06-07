@@ -27,6 +27,7 @@ public class LikeServiceImpl implements LikeService{
         Member member = Member.builder().email(memberRepository.findByEmail(likeRequestDTO.getMember_email())).build();
         Board board = Board.builder().bno((long) boardRepository.findByBno(likeRequestDTO.getBoard_bno())).build();
 
+        System.out.println("exists board, member " + recommendationRepository.existsByBoardAndWriter(board, member));
         if(recommendationRepository.existsByBoardAndWriter(board, member)) {
             System.out.println("insertError!!");
             throw new Exception();
@@ -43,10 +44,12 @@ public class LikeServiceImpl implements LikeService{
     @Transactional
     @Override
     public void delete(LikeRequestDTO likeRequestDTO) throws Exception {
-
+        log.info("LikeServiceImpl, delete...........");
         Member member = Member.builder().email(memberRepository.findByEmail(likeRequestDTO.getMember_email())).build();
 
         Board board = Board.builder().bno((long) boardRepository.findByBno(likeRequestDTO.getBoard_bno())).build();
+        System.out.println("not exists board, member " + recommendationRepository.existsByBoardAndWriter(board, member));
+
         if(!recommendationRepository.existsByBoardAndWriter(board, member)) {
             System.out.println("deleteError!!");
             throw new Exception();

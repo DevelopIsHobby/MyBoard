@@ -72,17 +72,6 @@
                 alert(registerMsg + "번째 게시물이 등록되었습니다..");
                 registerMsg="";
             }
-            /*<![CDATA[*/
-            var tagsInput = document.getElementById('tags');
-            var tags = /*[[${tags}]]*/ '';
-
-            // 맨 앞에 '#'이 없는 경우 추가
-            if (tags && !tags.startsWith('#')) {
-                tags = '#' + tags;
-            }
-
-            tagsInput.value = tags;
-            /*]]>*/
         </script>
         <script>
             let currentPage = 1;
@@ -90,20 +79,29 @@
 
 
             $(document).ready(function() {
+                var tagsInput = $('.tag');
+
+                // tagsInput에 포함된 각 요소의 텍스트에 '#'이 없는 경우 '#'을 추가합니다.
+                tagsInput.each(function() {
+                    var tagText = $(this).text().trim();
+                    if (!tagText.startsWith('#')) {
+                        $(this).text('#' + tagText);
+                    }
+                });
 
                 // 스크랩 기능 구현
                 $(document).on('click', '.scrap-button', function() {
                     const button = $(this);
-                    const board_bno = $(this).closest('.card').find('.board_bno').val();
-                    const member_email = $(this).closest('.card').find('.member_email').text();
+                    const bno = $(this).closest('.card').find('.board_bno').val();
+                    const writer = $(this).closest('.card').find('.member_email').text();
 
                     console.log(button);
-                    console.log(board_bno);
-                    console.log(member_email);
+                    console.log(bno);
+                    console.log(writer);
 
                     let isScrapped = button.text() === 'UnScrap';
 
-                    const url = isScrapped ? `/scrap?bno=${board_bno}&writer=${member_email}` : `/cancelScrap?bno=${board_bno}&writer=${member_email}`;
+                    const url = isScrapped ? `/scrap?bno=${bno}&writer=${writer}` : `/cancelScrap?bno=${bno}&writer=${writer}`;
                     $.ajax({
                         url: url,
                         type: isScrapped ? "Post" : "Delete",
@@ -134,17 +132,19 @@
 
                     // 클릭된 버튼의 좋아요 상태를 나타내는 변수
                     let isLiked = clickedButton.data('isLiked');
-
+                    console.log('before changed', isLiked)
                     // 좋아요 상태에 따라 URL 설정
                     const url = isLiked ? `/disLike?likeCount=${likeCount}` : `/like?likeCount=${likeCount}`;
+                    console.log(url)
 
                     $.ajax({
                         url: url,
                         method: isLiked ? 'DELETE' : 'POST',
                         contentType: 'application/json',
-                        data: JSON.stringify({ member_email:member_email, board_bno: board_bno}),
+                        data: JSON.stringify({ member_email:member_email, board_bno: board_bno }),
                         success: function(response) {
                             if (response) {
+                                alert(response)
                                 // 서버 응답에서 좋아요 수를 받아옴
                                 const updatedLikeCount = response;
 
@@ -157,12 +157,13 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            console.log('Error: ', error);
                             clickedButton.data('isLiked', !isLiked);
 
-                            const updatedLikeCount = likeCount - 1;
-                            const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
-                            likeCountElement.text(updatedLikeCount);
+                            if(board_bno>0) {
+                                const updatedLikeCount = likeCount - 1;
+                                const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
+                                likeCountElement.text(updatedLikeCount);
+                            }
                         }
                     });
                 })
@@ -237,6 +238,14 @@
                         formattedDate = '방금 전';
                     }
 
+                    // Tag앞에 # 붙이기
+                    function addHashIfNeeded(tag) {
+                        if (tag && !tag.startsWith('#')) {
+                            return '#' + tag;
+                        }
+                        return tag;
+                    }
+
 
                     content += '<div class="col">'
                     content += '<div class="card h-70">'
@@ -250,7 +259,7 @@
                     content += '</div>'
                     content += '<p class="card-text member_email">' + dto.writerEmail + '</p></div>'
                     dto.tags.forEach(tag => {
-                        content += '<span class="card-text"><small>' + tag + '   </small></span>'
+                        content += '<span class="card-text"><small class="tag">' + addHashIfNeeded(tag) + '   </small></span>'
                     });
                     content += '<p class="card-text">Like : <b class="like-count">' + dto.likeCount + '  </b>'
                     content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button>'

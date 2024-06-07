@@ -28,6 +28,25 @@ BoardRepositoryTest {
     @Autowired
     private TagRepository tagRepository;
 
+
+    @Test
+    public void test() {
+        String tagName = "Modif";
+
+        List<Board> result = boardRepository.findBoardsByTagName(tagName);
+        result.forEach(arr -> {
+            System.out.println(arr);
+        });
+    }
+
+    @Test
+    public void testSearchPage() {
+        Pageable pageable = PageRequest.of(0,10,Sort.by("bno").descending());
+
+        Page<Object[]> result = boardRepository.searchPage("t","1",pageable);
+    }
+
+
     @Test
     public void testSearch() {
         boardRepository.search();
@@ -40,7 +59,10 @@ BoardRepositoryTest {
 
     @Test
     public void increaseLikeCount() {
-        boardRepository.updateLikeCount(-1,10l);
+        System.out.println("before likeCount" + boardRepository.getOnlyBoardByBno(97l).getLikeCount());
+        boardRepository.updateLikeCount(1,97l);
+        System.out.println("after likeCount" + boardRepository.getOnlyBoardByBno(97l).getLikeCount());
+
     }
 
 //    @Test

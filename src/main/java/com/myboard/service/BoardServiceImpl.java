@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,11 @@ public class BoardServiceImpl implements BoardService {
     private final RecommendationRepository recommendationRepository;
     private final ReviewRepository reviewRepository;
     private final ScrapRepository scrapRepository;
+
+    @Override
+    public Board getBoardByBno(Long bno) {
+        return boardRepository.getOnlyBoardByBno(bno);
+    }
 
     @Override
     public Long register(BoardDTO boardDTO) {
@@ -97,6 +101,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void updateCount(Board board, Boolean likeBoolean) {
+        log.info("boardService.....updateCount");
+        System.out.println("board.getBno() = " + board.getBno());
         if(likeBoolean) {
             boardRepository.updateLikeCount(1, board.getBno());
         }else {

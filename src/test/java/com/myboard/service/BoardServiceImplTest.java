@@ -3,6 +3,7 @@ package com.myboard.service;
 import com.myboard.dto.BoardDTO;
 import com.myboard.dto.PageRequestDTO;
 import com.myboard.dto.PageResultDTO;
+import com.myboard.entity.Board;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,15 @@ import java.util.List;
 class BoardServiceImplTest {
     @Autowired
     private BoardService boardService;
+
+    @Test
+    public void testLikeCnt() {
+        Board boforeBoard = boardService.getBoardByBno(97l);
+        System.out.println("Before board.getLikeCount() = " + boforeBoard.getLikeCount());
+        boardService.updateCount(boforeBoard, true);
+        Board afterBoard = boardService.getBoardByBno(97l);
+        System.out.println("After board.getLikeCount() = " + afterBoard.getLikeCount());
+    }
 
     @Test
     public void testModify() {

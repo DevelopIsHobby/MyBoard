@@ -49,6 +49,9 @@ public interface BoardRepository extends JpaRepository<Board, Long>, SearchBoard
             "group by b, w, bi")
     List<Object[]> getBoardByBno(@Param("bno") Long bno);
 
+    @Query(value="select b from Board b where b.bno=:bno")
+    Board getOnlyBoardByBno(@Param("bno") Long bno);
+
     @Modifying
     @Transactional
     @Query(value="update board set like_count=like_count + :boardCount where bno=:bno", nativeQuery=true)

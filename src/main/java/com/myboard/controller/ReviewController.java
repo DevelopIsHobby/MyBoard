@@ -37,7 +37,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{bno}/{rno}")
-    public ResponseEntity<Long> remove(@PathVariable Long rno) {
+    public ResponseEntity<Long> remove(@PathVariable("rno") Long rno) {
         log.info("remove_rno : " + rno);
 
         reviewService.remove(rno);
@@ -46,7 +46,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{bno}/{rno}")
-    public ResponseEntity<Long> modifyReview(@PathVariable Long rno, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<Long> modifyReview(@PathVariable("rno") Long rno, @RequestBody ReviewDTO reviewDTO) {
         log.info("modifiy_reivewDTO : " + reviewDTO);
 
         reviewService.modify(reviewDTO);

@@ -6,6 +6,7 @@ import com.myboard.entity.Member;
 import com.myboard.service.BoardService;
 import com.myboard.service.LikeService;
 import com.myboard.service.ScrapService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -43,28 +44,45 @@ public class AjaxController {
     // @ResponseBody로 전달받으려면 JSON 데이터로 전달해야하고
     // @RequestParam으로 전달받으려면 URL을 통해 전달받아야 한다.
     @PostMapping("/like")
-    public ResponseEntity<Long> insert(@RequestBody LikeRequestDTO likeRequestDTO, @RequestParam Long likeCount) {
+    @Transactional
+    public ResponseEntity<Integer> insert(@RequestBody LikeRequestDTO likeRequestDTO, @RequestParam("likeCount") Integer likeCount) {
         log.info("AjaxController.............../like");
         try {
             likeService.insert(likeRequestDTO);
-            likeCount++;
-            Board board = Board.builder().bno(likeRequestDTO.getBoard_bno()).build();
+
+            Board board = boardService.getBoardByBno(likeRequestDTO.getBoard_bno());
+            System.out.println("before LikeCount = " + board.getLikeCount());
             boardService.updateCount(board, true);
+//            Board afterBoard = boardService.getBoardByBno(likeRequestDTO.getBoard_bno());
+            // 테스트에서는 위에서 처럼하면 before, after가 다르게 나왔는데 컨트롤러에선 계속 같은 값만 나오고 갱신이 안되네..
+            likeCount++;
+            System.out.println("after LikeCount = " + likeCount);
+
             return new ResponseEntity<>(likeCount, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+
     // 추천 기능 Ajax
     @DeleteMapping("/disLike")
-    public ResponseEntity<?> delete(@RequestBody LikeRequestDTO likeRequestDTO, @RequestParam Long likeCount) {
+    @Transactional
+    public ResponseEntity<Integer> delete(@RequestBody LikeRequestDTO likeRequestDTO, @RequestParam("likeCount") Integer likeCount) {
         log.info("AjaxController............/disLike");
         try {
             likeService.delete(likeRequestDTO);
-            likeCount--;
-            Board board = Board.builder().bno(likeRequestDTO.getBoard_bno()).build();
+
+            Board board = boardService.getBoardByBno(likeRequestDTO.getBoard_bno());
+            System.out.println("before LikeCount = " + board.getLikeCount());
+
             boardService.updateCount(board, false);
+//            Board afterBoard = boardService.getBoardByBno(likeRequestDTO.getBoard_bno());
+
+            likeCount--;
+            System.out.println("after LikeCount = " + likeCount);
+
+
             return new ResponseEntity<>(likeCount, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -73,7 +91,7 @@ public class AjaxController {
 
     // Scrap Ajax
     @PostMapping("/scrap")
-    public ResponseEntity<Map<String, String>> scrap(@RequestParam Long bno, @RequestParam String writer) {
+    public ResponseEntity<Map<String, String>> scrap(@RequestParam("bno") Long bno, @RequestParam("writer") String writer) {
         System.out.println("bno = " + bno);
         System.out.println("writer = " + writer);
         Board board = Board.builder().bno(bno).build();
@@ -95,7 +113,7 @@ public class AjaxController {
 
     // Scrap Ajax
     @DeleteMapping("/cancelScrap")
-    public ResponseEntity<Map<String, String>> unscrapped(@RequestParam Long bno, @RequestParam String writer) {
+    public ResponseEntity<Map<String, String>> unscrapped(@RequestParam("bno") Long bno, @RequestParam("writer") String writer) {
         Board board = Board.builder().bno(bno).build();
         Member member = Member.builder().email(writer).build();
 

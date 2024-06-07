@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public interface BoardService {
+    Board getBoardByBno(Long bno);
     Long register(BoardDTO boardDTO);
 
     BoardDTO getTags(BoardDTO boardDTO);
