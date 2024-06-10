@@ -17,9 +17,9 @@
     <i>게시글 CRUD</i> <br>
     <i>댓글 CRUD</i>
    </div> 
-    <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🧸DB 설계도 </h2>  
+    <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;">  :paw_prints:ERD </h2>  
     <div style="font-weight: 700; font-size: 15px; text-align: center; color: #282d33;">
-        <img src=""width="800" height="400" >
+        <img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/6daad215-5cb8-46aa-8ce4-1c1dbcb4e5f1">
    </div> 
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🌹기능설명 </h2>  
@@ -86,10 +86,9 @@
   <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;">😃 소감 🥲</h2>
     :star:그동안 웹에 대해 공부하면서 넣어보고 싶었던 기능들을 모두 구현해 볼 수 있어서 매우 뿌듯하다.<br>
     :star:JPA와 Gardle을 활용해 볼 수 있어서 좋았다.<br>
-    :star:집에 있는 노트북과 강의장에 있는 노트북을 깃허브로 연동하여 마치 팀프로젝트를 하는 듯한 느낌을 받을 수 있었다.<br>
-    :sweat_drops:무한스크롤에서 위치를 기억시켜 List 버튼을 클릭했을 때 원래 있던 위치로 가게 하는 것을 끝내 구현하지 못했다.<br>
+    :sweat_drops:무한스크롤에서 위치를 기억시켜 List 버튼을 클릭했을 때 원래 있던 위치로 가게 하는 것을 구현하지 못했다.<br>
     :sweat_drops:스프링 시큐리티 적용 못한 것이 아쉽다.<br>
-    :sweat_drops:일정 시간 동안 일정 수 이상의 추천을 받을 경우 핫 게시판이 되게 하는 기능도 넣어보고 싶다.
+    :punch:일정 시간 동안 일정 수 이상의 추천을 받을 경우 핫 게시판이 되게 하는 기능도 넣어보고 싶다.
 </div>
 
 
