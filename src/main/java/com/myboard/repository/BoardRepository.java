@@ -30,6 +30,15 @@ public interface BoardRepository extends JpaRepository<Board, Long>, SearchBoard
             "group by b, w, bi")
     Page<Object[]> getList(Pageable pageable);
 
+    @Query(value = "select b, w, bi, count(distinct r) from Board b " +
+            "left join b.writer w " +
+            "left join BoardImage bi on bi.board = b and " +
+            "bi.inum = (select min(bi2.inum) from BoardImage bi2 where bi2.board = b) " +
+            "left join Review r on r.board = b " +
+            "where b.isScrapped = true " +
+            "group by b, w, bi")
+    Page<Object[]> getListMyPage(Pageable pageable);
+
     @Query(value="select t.name from BoardTagMap bt " +
             "left join bt.tag t " +
             "where bt.board.bno =:bno group by t.name order by bt.board.bno")

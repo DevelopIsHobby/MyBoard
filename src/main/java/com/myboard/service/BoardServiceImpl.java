@@ -8,6 +8,7 @@ import com.myboard.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -86,8 +87,11 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO) {
-        Pageable pageable = (Pageable) pageRequestDTO.getPageable(Sort.by("bno").descending());
-        Page<Object[]> result = boardRepository.getList(pageable);
+//        Pageable pageable = (Pageable) pageRequestDTO.getPageable(Sort.by("bno").descending());
+//        Page<Object[]> result = boardRepository.getList(pageable);
+
+        log.info("boardService..........pageRequestDTO");
+
 
         Function<Object[], BoardDTO> fn = (arr -> entityToDTO(
                 (Board) arr[0],
@@ -95,6 +99,42 @@ public class BoardServiceImpl implements BoardService {
                 (BoardImage) arr[2],
                 (Long) arr[3]
         ));
+        Page<Object[]> result = null;
+
+        if(pageRequestDTO.getType().equals("tags")) {
+            result = boardRepository.findBoardsByTagName(
+                    pageRequestDTO.getKeyword()
+            );
+        } else {
+            result = boardRepository.searchPage(
+                    pageRequestDTO.getType(),
+                    pageRequestDTO.getKeyword(),
+                    pageRequestDTO.getPageable(Sort.by("bno").descending())
+            );
+        }
+        return new PageResultDTO<>(result, fn);
+    }
+
+    @Override
+    public PageResultDTO<BoardDTO, Object[]> getListMyPage(PageRequestDTO pageRequestDTO) {
+        log.info("boardService..........getListMyPage");
+
+
+        Function<Object[], BoardDTO> fn = (arr -> entityToDTO(
+                (Board) arr[0],
+                (Member) arr[1],
+                (BoardImage) arr[2],
+                (Long) arr[3]
+        ));
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage()-1,
+                pageRequestDTO.getSize(),
+                Sort.by("bno").descending()
+        );
+
+        Page<Object[]> result = boardRepository.getListMyPage(pageable);
+
 
         return new PageResultDTO<>(result, fn);
     }

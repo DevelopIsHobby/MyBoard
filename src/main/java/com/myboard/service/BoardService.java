@@ -20,6 +20,7 @@ public interface BoardService {
     BoardDTO getTags(BoardDTO boardDTO);
 
     PageResultDTO<BoardDTO, Object[]> getList(PageRequestDTO pageRequestDTO);
+    PageResultDTO<BoardDTO, Object[]> getListMyPage(PageRequestDTO pageRequestDTO);
 
     void updateCount(Board board, Boolean likeBoolean);
 

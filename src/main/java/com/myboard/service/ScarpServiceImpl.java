@@ -49,9 +49,11 @@ public class ScarpServiceImpl implements ScrapService {
 
         if(!scrapRepository.existsByBoardAndMember(board, member)) {
             System.out.println("cancelError!!");
-            throw new Exception();
+            board.setScrapped(false);
+            boardRepository.updateIsScrapped(false, board.getBno());
         }
         board.setScrapped(false);
+        boardRepository.updateIsScrapped(false, board.getBno());
         scrapRepository.deleteScrapByBoardAndMember(board, member);
     }
 

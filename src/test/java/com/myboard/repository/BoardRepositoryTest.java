@@ -30,18 +30,30 @@ BoardRepositoryTest {
 
 
     @Test
-    public void test() {
-        String tagName = "Modif";
+    public void testMyPage() {
+        Pageable pageable = PageRequest.of(
+                0,10, Sort.by("bno").descending());
+        Page<Object[]> result = boardRepository.getListMyPage(pageable);
 
-        List<Board> result = boardRepository.findBoardsByTagName(tagName);
+        System.out.println("========================================");
+        result.getContent().forEach(obj -> {
+            System.out.println(Arrays.toString(obj));
+        });
+        System.out.println("========================================");
+    }
+    @Test
+    public void testFindTag() {
+        String tagName = "test";
+
+        Page<Object[]> result = boardRepository.findBoardsByTagName(tagName);
         result.forEach(arr -> {
-            System.out.println(arr);
+            System.out.println(Arrays.toString(arr));
         });
     }
 
     @Test
     public void testSearchPage() {
-        Pageable pageable = PageRequest.of(0,10,Sort.by("bno").descending());
+        Pageable pageable = PageRequest.of(0,10,Sort.by("bno").descending().and(Sort.by("title").ascending()));
 
         Page<Object[]> result = boardRepository.searchPage("t","1",pageable);
     }
@@ -98,7 +110,8 @@ BoardRepositoryTest {
     @Test
     public void getListTest() {
 
-        Pageable pageable = PageRequest.of(0,10, Sort.by("bno").descending());
+        Pageable pageable = PageRequest.of(
+                0,10, Sort.by("bno").descending());
         Page<Object[]> result = boardRepository.getList(pageable);
 
         System.out.println("========================================");

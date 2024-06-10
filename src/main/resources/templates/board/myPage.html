@@ -35,9 +35,29 @@
                     <li class="nav-item"><a href="#" class="nav-link">Node.js</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">API</a></li>
                 </ul>
-                <form action="" class="form-inline">
-                    <input type="text" class="form-control" placeholder="Search"/>
+                <!--   검색조건-->
+                <form action="/board/list" method="get" id="searchForm" class="form-inline">
+                    <div class="input-group">
+                        <input type="hidden" name="page" value="1">
+                        <div class="input-group-prepend">
+                            <select name="type" id="" class="custom-select">
+                                <option th:selected="${pageRequestDTO.type == null}">---------</option>
+                                <option value="t" th:selected="${pageRequestDTO.type=='t'}">제목</option>
+                                <option value="c" th:selected="${pageRequestDTO.type=='c'}">내용</option>
+                                <option value="w" th:selected="${pageRequestDTO.type=='w'}">작성자</option>
+                                <option value="tc" th:selected="${pageRequestDTO.type=='tc'}">제목+내용</option>
+                                <option value="tcw" th:selected="${pageRequestDTO.type=='tcw'}">제목+내용+작성자</option>
+                                <option value="tags" th:selected="${pageRequestDTO.type=='tags'}">태그</option>
+                            </select>
+                        </div>
+                        <input name="keyword" th:value="${pageRequestDTO.keyword}" class="form-control">
+                        <div class="input-group-append" id="button-addon4">
+                            <button class="btn btn-outline-secondary btn-search" type="button">Search</button>
+                            <button class="btn btn-outline-secondary btn-clear" type="button">Clear</button>
+                        </div>
+                    </div>
                 </form>
+                <!--   검색조건 끝-->
                 <ul class="navbar-nav">
                     <li class="nav-item"><a href="#" class="nav-link">Node.js</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">API</a></li>
@@ -49,64 +69,254 @@
     <div class="container">
         <div class="row">
             <div class="mt-2 p-5 bg-secondary text-white rounded">
-                <h1>내가 쓴 글 목록</h1>
+                <h1>Board List Page</h1>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-                <a href="#" class="btn btn-primary btn-lg">Register</a>
+                <a th:href="@{/board/register}" class="btn btn-primary btn-lg">Register</a>
             </div>
-            <div class="row row-cols-1 row-cols-md-3 g-3">
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="미르.jpg" style="max-height: 18rem;" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
-                            </div>
-                            <div class="col-3">Writer</div>
-                        </div>
-                        <p class="card-text">This 7is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>      
-                    
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="미르.jpg" style="max-height: 18rem;"  class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
-                            </div>
-                            <div class="col-3">Writer</div>
-                        </div>
-                      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card h-70">
-                    <img src="미르.jpg" style="max-height: 18rem;" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-9">
-                                <h5 class="card-title">Card title</h5>
-                            </div>
-                            <div class="col-3">Writer</div>
-                        </div>
-                      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-                    </div>
-                    <div class="card-footer">
-                      <small class="text-body-secondary">Last updated 3 mins ago</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+
+            <div class="mt-2" id="content-container">
+
+            </div>
+
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script th:inline="javascript">
+            var deleteMsg = [[${deleteMsg}]];
+            if(deleteMsg) {
+                alert(deleteMsg + "번째 게시물이 삭제되었습니다.");
+                deleteMsg="";
+            }
+            var registerMsg = [[${registerMsg}]];
+            if(registerMsg) {
+                alert(registerMsg + "번째 게시물이 등록되었습니다..");
+                registerMsg="";
+            }
+
+            var searchForm = $("#searchForm")
+            $(".btn-search").click(function(e) {
+                searchForm.submit();
+            })
+
+            $(".btn-clear").click(function (e) {
+                searchForm.empty().submit();
+            })
+        </script>
+        <script>
+            let currentPage = 1;
+            const pageSize = 9; // 한 번에 가져올 데이터의 개수
+
+
+            $(document).ready(function() {
+                var tagsInput = $('.tag');
+
+                // tagsInput에 포함된 각 요소의 텍스트에 '#'이 없는 경우 '#'을 추가합니다.
+                tagsInput.each(function() {
+                    var tagText = $(this).text().trim();
+                    if (!tagText.startsWith('#')) {
+                        $(this).text('#' + tagText);
+                    }
+                });
+
+                // 스크랩 기능 구현
+                $(document).on('click', '.scrap-button', function() {
+                    const button = $(this);
+                    const card = $(this).closest('.card');
+                    const bno = card.find('.board_bno').val();
+                    const writer = card.find('.member_email').text();
+                    let isScrapped = button.text() === 'UnScrap';
+
+                    const url = isScrapped ? `/scrap?bno=${bno}&writer=${writer}` : `/cancelScrap?bno=${bno}&writer=${writer}`;
+
+                    $.ajax({
+                        url: url,
+                        type: isScrapped ? "POST" : "DELETE",
+                        success: function(response) {
+                            alert(response.msg);
+                            if (!isScrapped) {
+                                card.remove();
+                                rearrangeCards(); // 카드 재배치
+                            } else {
+                                button.text('Scrapped');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert("Error: " + error);
+                            button.text(isScrapped ? 'UnScrap' : 'Scrapped');
+                        }
+                    });
+                });
+
+                function rearrangeCards() {
+                    // 남은 카드들의 순서를 재배치
+                    $('.card').each(function(index) {
+                        $(this).css('order', index);
+                    });
+                }
+
+
+                // 추천 기능 구현
+                $(document).on('click', '.like-button', function() {
+                    // 현재 클릭된 버튼의 부모 요소에서 board_bno와 member_email 값을 찾습니다.
+                    const board_bno = $(this).closest('.card').find('.board_bno').val();
+                    const member_email = $(this).closest('.card').find('.member_email').text();
+                    const likeCount = parseInt($(this).closest('.card').find('.like-count').text());
+                    console.log(board_bno);
+                    console.log(member_email);
+                    console.log(likeCount);
+
+                    // 클릭된 버튼을 변수에 저장
+                    const clickedButton = $(this);
+
+                    // 클릭된 버튼의 좋아요 상태를 나타내는 변수
+                    let isLiked = clickedButton.data('isLiked');
+                    console.log('before changed', isLiked)
+                    // 좋아요 상태에 따라 URL 설정
+                    const url = isLiked ? `/disLike?likeCount=${likeCount}` : `/like?likeCount=${likeCount}`;
+                    console.log(url)
+
+                    $.ajax({
+                        url: url,
+                        method: isLiked ? 'DELETE' : 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ member_email:member_email, board_bno: board_bno }),
+                        success: function(response) {
+                            if (response) {
+                                alert(response)
+                                // 서버 응답에서 좋아요 수를 받아옴
+                                const updatedLikeCount = response;
+
+                                // 좋아요 수를 화면에 반영
+                                const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
+                                likeCountElement.text(updatedLikeCount);
+
+                                // 클릭된 버튼의 좋아요 상태를 업데이트
+                                clickedButton.data('isLiked', !isLiked);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            clickedButton.data('isLiked', !isLiked);
+
+                            if(board_bno>0) {
+                                const updatedLikeCount = likeCount - 1;
+                                const likeCountElement = clickedButton.closest('.card-body').find('.like-count');
+                                likeCountElement.text(updatedLikeCount);
+                            }
+                        }
+                    });
+                })
+
+                // 무한스크롤 구현
+                const keyword = document.querySelector('input[name="keyword"]').value;
+                const type = document.querySelector('select[name="type"]').value;
+
+                loadMoreData(currentPage, pageSize, type, keyword); // 페이지 로드 시 초기 데이터 로드
+
+                $(window).scroll(function() {
+                    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
+                        currentPage++;
+                        console.log(currentPage);
+                        loadMoreData(currentPage, pageSize);
+                    }
+                });
+
+                // 페이지를 떠날 때 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+                window.addEventListener("beforeunload", function() {
+                    // 현재 스크롤 위치를 세션 스토리지에 저장합니다.
+                    sessionStorage.setItem("scrollPosition", window.scrollY);
+                });
+            });
+
+            function loadMoreData(page, size, type = '', keyword = '') {
+                console.log(keyword);
+                $.ajax({
+                    url: '/api/dataMyPage',
+                    method: 'GET',
+                    data: { page: page, size: size, type: type, keyword: keyword },
+                    success: function(data) {
+                        console.log("데이터를 가져왔습니다", data);
+
+                        updateContent(data.dtoList);
+                    },
+                    error: function(error) {
+                        console.error("Error fetching data", error);
+                    }
+                });
+            }
+
+
+            function updateContent(data, isKeywordSearch = false) {
+                let content = '<div class="row row-cols-1 row-cols-md-3 g-3 mt-1 list">';
+                data.forEach(dto => {
+                    //스크랩 상태를 저장하는 변수
+                    let isScrapped = dto.scrapped;
+                    let scrapText = isScrapped ? 'Scrapped' : 'UnScrap';
+
+                    // Date 객체로 변환
+                    let regDate = new Date(dto.regDate);
+                    let modDate = new Date(dto.modDate);
+                    let currentDate = new Date();
+
+                    let displayDate = dto.regDate !== dto.modDate ? modDate : regDate;
+
+                    // 날짜 차이를 계산하는 함수
+                    function getTimeDifference(date1, date2) {
+                        const diffTime = date2 - date1; // 시간 차이 밀리초 단위로 계산
+                        const diffMinutes = Math.floor(diffTime / (1000 * 60)); // 분 단위로 변환
+                        const diffHours = Math.floor(diffMinutes / 60); // 시간 단위로 변환
+                        const diffDays = Math.floor(diffHours / 24); // 일 단위로 변환
+                        return { diffMinutes, diffHours, diffDays };
+                    }
+
+                    let timeDiff = getTimeDifference(displayDate, currentDate);
+
+                    // 시간 차이에 따라 적절한 형식으로 표시
+                    let formattedDate;
+                    if (timeDiff.diffDays >= 1) {
+                        formattedDate = displayDate.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    } else if (timeDiff.diffHours >= 1) {
+                        formattedDate = `${timeDiff.diffHours}시간 전`;
+                    } else if (timeDiff.diffMinutes >= 1) {
+                        formattedDate = `${timeDiff.diffMinutes}분 전`;
+                    } else {
+                        formattedDate = '방금 전';
+                    }
+
+                    // Tag앞에 # 붙이기
+                    function addHashIfNeeded(tag) {
+                        if (tag && !tag.startsWith('#')) {
+                            return '#' + tag;
+                        }
+                        return tag;
+                    }
+
+                    content += '<div class="col">'
+                    content += '<div class="card h-70">'
+                    if (dto.imageDTO && dto.imageDTO.thumbnailURL) {
+                        content += '<img src="/display?fileName=' + dto.imageDTO.imageURL + '" style="max-height: 18rem;" class="card-img-top" alt="...">'
+                    }
+                    content += '<div class="card-body">'
+                    content += '<div class="row mb-2">'
+                    content += '<div class="col-9">'
+                    content += '<h4 class="card-title"><a class="listBtn" href="/board/read?bno='+dto.bno + '">'+ dto.title +'</a><span><small><b> (' + dto.replyCount + ')</b></small><input class="board_bno" type="hidden" value="'+ dto.bno +'"></span></h4>'
+                    content += '</div>'
+                    content += '<p class="card-text member_email">' + dto.writerEmail + '</p></div>'
+                    dto.tags.forEach(tag => {
+                        content += '<span class="card-text"><small class="tag">' + addHashIfNeeded(tag) + '   </small></span>'
+                    });
+                    content += '<p class="card-text">Like : <b class="like-count">' + dto.likeCount + '  </b>'
+                    content += '<span><button class="btn btn-outline-danger btn-sm like-button"> + 1</button>'
+                    content += '<button class="btn btn-outline-success btn-sm scrap-button">' +  scrapText + '</button></span></p></div>'
+                    content += '<div class="card-footer"><small class="text-body-secondary">' + formattedDate + '</small></div></div></div>';
+                });
+                content += '</div>'
+
+                if (isKeywordSearch) {
+                    $('#content-container').html(content); // 새 콘텐츠를 기존 콘텐츠로 대체
+                } else {
+                    $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가
+                }
+            }
+        </script>
 </body>
 </html>

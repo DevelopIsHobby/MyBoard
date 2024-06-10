@@ -11,5 +11,5 @@ public interface SearchBoardRepository {
 
     Page<Object[]> searchPage(String type, String keyword, Pageable pageable);
 
-    List<Board> findBoardsByTagName(String tagName);
+    Page<Object[]> findBoardsByTagName(String tagName);
 }

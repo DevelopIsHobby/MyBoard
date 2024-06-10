@@ -36,9 +36,29 @@
                     <li class="nav-item"><a href="#" class="nav-link">Node.js</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">API</a></li>
                 </ul>
-                <form action="" class="form-inline">
-                    <input type="text" class="form-control" placeholder="Search"/>
+                <!--   검색조건-->
+                <form action="/board/list" method="get" id="searchForm" class="form-inline">
+                    <div class="input-group">
+                        <input type="hidden" name="page" value="1">
+                        <div class="input-group-prepend">
+                            <select name="type" id="" class="custom-select">
+                                <option th:selected="${pageRequestDTO.type == null}">---------</option>
+                                <option value="t" th:selected="${pageRequestDTO.type=='t'}">제목</option>
+                                <option value="c" th:selected="${pageRequestDTO.type=='c'}">내용</option>
+                                <option value="w" th:selected="${pageRequestDTO.type=='w'}">작성자</option>
+                                <option value="tc" th:selected="${pageRequestDTO.type=='tc'}">제목+내용</option>
+                                <option value="tcw" th:selected="${pageRequestDTO.type=='tcw'}">제목+내용+작성자</option>
+                                <option value="tags" th:selected="${pageRequestDTO.type=='tags'}">태그</option>
+                            </select>
+                        </div>
+                        <input name="keyword" th:value="${pageRequestDTO.keyword}" class="form-control">
+                        <div class="input-group-append" id="button-addon4">
+                            <button class="btn btn-outline-secondary btn-search" type="button">Search</button>
+                            <button class="btn btn-outline-secondary btn-clear" type="button">Clear</button>
+                        </div>
+                    </div>
                 </form>
+                <!--   검색조건 끝-->
                 <ul class="navbar-nav">
                     <li class="nav-item"><a href="#" class="nav-link">Node.js</a></li>
                     <li class="nav-item"><a href="#" class="nav-link">API</a></li>
@@ -72,6 +92,15 @@
                 alert(registerMsg + "번째 게시물이 등록되었습니다..");
                 registerMsg="";
             }
+
+            var searchForm = $("#searchForm")
+            $(".btn-search").click(function(e) {
+                searchForm.submit();
+            })
+
+            $(".btn-clear").click(function (e) {
+                searchForm.empty().submit();
+            })
         </script>
         <script>
             let currentPage = 1;
@@ -111,7 +140,8 @@
                         },
                         error: function(xhr, status, error) {
                             alert("Error: " + error);
-                            isScrapped = !isScrapped;
+                            isScrapped = false;
+                            button.text(isScrapped ? 'Scrapped' : 'UnScrap');
                         }
                     })
                 })
@@ -169,12 +199,15 @@
                 })
 
                 // 무한스크롤 구현
-                loadMoreData(currentPage, pageSize); // 페이지 로드 시 초기 데이터 로드
+                const keyword = document.querySelector('input[name="keyword"]').value;
+                const type = document.querySelector('select[name="type"]').value;
+
+                loadMoreData(currentPage, pageSize, type, keyword); // 페이지 로드 시 초기 데이터 로드
 
                 $(window).scroll(function() {
                     if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
                         currentPage++;
-                        console.log(currentPage)
+                        console.log(currentPage);
                         loadMoreData(currentPage, pageSize);
                     }
                 });
@@ -186,14 +219,16 @@
                 });
             });
 
-            function loadMoreData(page, size) {
+            function loadMoreData(page, size, type = '', keyword = '') {
+                console.log(keyword);
                 $.ajax({
                     url: '/api/data',
                     method: 'GET',
-                    data: { page: page, size: size },
+                    data: { page: page, size: size, type: type, keyword: keyword },
                     success: function(data) {
-                        console.log("Data fetched",data);
-                        updateContent(data.dtoList); // Page 객체의 content 리스트를 사용
+                        console.log("데이터를 가져왔습니다", data);
+
+                        updateContent(data.dtoList);
                     },
                     error: function(error) {
                         console.error("Error fetching data", error);
@@ -201,7 +236,8 @@
                 });
             }
 
-            function updateContent(data) {
+
+            function updateContent(data, isKeywordSearch = false) {
                 let content = '<div class="row row-cols-1 row-cols-md-3 g-3 mt-1 list">';
                 data.forEach(dto => {
                     //스크랩 상태를 저장하는 변수
@@ -246,7 +282,6 @@
                         return tag;
                     }
 
-
                     content += '<div class="col">'
                     content += '<div class="card h-70">'
                     if (dto.imageDTO && dto.imageDTO.thumbnailURL) {
@@ -268,8 +303,11 @@
                 });
                 content += '</div>'
 
-
-                $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가
+                if (isKeywordSearch) {
+                    $('#content-container').html(content); // 새 콘텐츠를 기존 콘텐츠로 대체
+                } else {
+                    $('#content-container').append(content); // 새 콘텐츠를 기존 콘텐츠에 추가
+                }
             }
         </script>
 </body>

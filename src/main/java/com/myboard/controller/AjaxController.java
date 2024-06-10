@@ -29,16 +29,34 @@ public class AjaxController {
     // 무한 스크롤 Ajax
     @GetMapping("/api/data")
     public ResponseEntity<PageResultDTO<BoardDTO, Object[]>> list(PageRequestDTO pageRequestDTO) {
-        PageResultDTO<BoardDTO, Object[]> result = boardService.getList(pageRequestDTO);
+        System.out.println("pageRequestDTO = " + pageRequestDTO);
 
+        PageResultDTO<BoardDTO, Object[]> result = boardService.getList(pageRequestDTO);
         List<BoardDTO> resultWithTags = new ArrayList<>();
         for(BoardDTO boardDTO : result.getDtoList()){
             resultWithTags.add(boardService.getTags(boardDTO));
         }
         result.setDtoList(resultWithTags);
 //        System.out.println("result = " + result);
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    // 마이페이지 무한 스크롤 Ajax
+    @GetMapping("/api/dataMyPage")
+    public ResponseEntity<PageResultDTO<BoardDTO, Object[]>> listMyPage(PageRequestDTO pageRequestDTO) {
+        System.out.println("pageRequestDTO = " + pageRequestDTO);
+
+        PageResultDTO<BoardDTO, Object[]> result = boardService.getListMyPage(pageRequestDTO);
+        List<BoardDTO> resultWithTags = new ArrayList<>();
+        for(BoardDTO boardDTO : result.getDtoList()){
+            resultWithTags.add(boardService.getTags(boardDTO));
+        }
+        result.setDtoList(resultWithTags);
+//        System.out.println("result = " + result);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
     // 추천 기능 Ajax
     // @ResponseBody로 전달받으려면 JSON 데이터로 전달해야하고

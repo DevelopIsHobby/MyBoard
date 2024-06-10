@@ -4,14 +4,16 @@ import com.myboard.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport implements SearchBoardRepository {
@@ -61,6 +63,7 @@ public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport impleme
 
         QBoard board = QBoard.board;
         QBoardImage boardImage = QBoardImage.boardImage;
+        QBoardImage boardImageSub = new QBoardImage("boardImageSub");
         QReview review = QReview.review;
         QMember member = QMember.member;
 
@@ -68,11 +71,16 @@ public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport impleme
         JPQLQuery<Board> jpqlQuery = from(board);
 
         jpqlQuery.leftJoin(member).on(board.writer.eq(member));
-        jpqlQuery.leftJoin(boardImage).on(boardImage.board.eq(board));
+        jpqlQuery.leftJoin(boardImage).on(boardImage.board.eq(board)
+                .and(boardImage.inum.eq(
+                        JPAExpressions.select(boardImageSub.inum.min())
+                                .from(boardImageSub)
+                                .where(boardImageSub.board.eq(board))
+                )));
         jpqlQuery.leftJoin(review).on(review.board.eq(board));
 
 
-        JPQLQuery<Tuple> tuple = jpqlQuery.select(board, member.email, boardImage, review.countDistinct());
+        JPQLQuery<Tuple> tuple = jpqlQuery.select(board, member, boardImage, review.countDistinct());
 
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
@@ -102,29 +110,80 @@ public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport impleme
         }
         tuple.where(booleanBuilder);
 
-        tuple.groupBy(board);
+        tuple.groupBy(board, member, boardImage);
+
+        this.getQuerydsl().applyPagination(pageable, tuple); // limit, offset, sort적용
 
         List<Tuple> result = tuple.fetch(); // fetch()는 쿼리 실행 결과를 가져온다.
 
         log.info(result);
-        
-        return null;
+
+        long count = tuple.fetchCount();
+
+        log.info("Count : " + count);
+
+        return new PageImpl<Object[]>(result.stream().map(Tuple::toArray).collect(Collectors.toList()),pageable, count);
     }
 
     @Override
-    public List<Board> findBoardsByTagName(String tagName) {
+    public Page<Object[]> findBoardsByTagName(String tagName) {
+        log.info("findBoardsByTagName........................");
 
         QBoard board = QBoard.board;
         QBoardTagMap boardTagMap = QBoardTagMap.boardTagMap;
         QTag tag = QTag.tag;
 
-        JPQLQuery<Board> jpqlQuery = from(board);
+        JPQLQuery<Board> tagJpqlQuery = from(board);
 
-        jpqlQuery.leftJoin(boardTagMap).on(boardTagMap.board.eq(board));
-        jpqlQuery.leftJoin(tag).on(boardTagMap.tag.eq(tag));
-        jpqlQuery.where(tag.name.contains(tagName));
+        tagJpqlQuery.leftJoin(boardTagMap).on(boardTagMap.board.eq(board));
+        tagJpqlQuery.leftJoin(tag).on(boardTagMap.tag.eq(tag));
+        tagJpqlQuery.where(tag.name.contains(tagName));
 
+        List<Board> boards = tagJpqlQuery.select(board).fetch();
+//        System.out.println("boards = " + boards);
 
-        return jpqlQuery.fetch();
+        if (boards != null && !boards.isEmpty()) {
+            Pageable pageable = PageRequest.of(0, 9, Sort.by("bno").descending().and(Sort.by("title").ascending()));
+
+            QBoardImage boardImage = QBoardImage.boardImage;
+            QBoardImage boardImageSub = new QBoardImage("boardImageSub");
+            QReview review = QReview.review;
+            QMember member = QMember.member;
+
+            JPQLQuery<Board> jpqlQuery = from(board);
+
+            jpqlQuery.leftJoin(member).on(board.writer.eq(member));
+            jpqlQuery.leftJoin(boardImage).on(boardImage.board.eq(board)
+                    .and(boardImage.inum.eq(
+                            JPAExpressions.select(boardImageSub.inum.min())
+                                    .from(boardImageSub)
+                                    .where(boardImageSub.board.eq(board))
+                    )));
+            jpqlQuery.leftJoin(review).on(review.board.eq(board));
+            jpqlQuery.leftJoin(boardTagMap).on(boardTagMap.board.eq(board));
+            jpqlQuery.leftJoin(tag).on(boardTagMap.tag.eq(tag));
+            jpqlQuery.where(tag.name.contains(tagName));
+
+            JPQLQuery<Tuple> tuple = jpqlQuery.select(board, member, boardImage, review.countDistinct());
+
+            tuple.where(board.in(boards));
+
+            tuple.groupBy(board, member, boardImage);
+
+            this.getQuerydsl().applyPagination(pageable, tuple); // limit, offset, sort 적용
+
+            List<Tuple> result = tuple.fetch(); // fetch()는 쿼리 실행 결과를 가져온다.
+
+            log.info(result);
+
+            long count = tuple.fetchCount();
+
+            log.info("Count : " + count);
+
+            return new PageImpl<Object[]>(result.stream().map(Tuple::toArray).collect(Collectors.toList()), pageable, count);
+        }
+
+        return new PageImpl<Object[]>(Collections.emptyList());
     }
+
 }
