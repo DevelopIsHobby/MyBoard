@@ -8,14 +8,18 @@
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🧸구현기능 </h2>  
     <div style="font-weight: 700; font-size: 15px; text-align: center; color: #282d33;">
-    무한스크롤<br>
-    좋아요 <br>
-    스크랩 & 마이페이지 <br>
-    검색 + 태그 <br>
-    파일첨부, 썸네일<br>
-    날짜 업데이트 <br>
-    게시글 CRUD<br>
-    댓글 CRUD<br>
+    <i>무한스크롤</i><br>
+    <i>좋아요</i><br>
+    <i>스크랩 & 마이페이지</i><br>
+    <i>검색 + 태그</i><br>
+    <i>파일첨부 & 썸네일</i><br>
+    <i>날짜 업데이트</i> <br>
+    <i>게시글 CRUD</i> <br>
+    <i>댓글 CRUD</i>
+   </div> 
+    <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🧸DB 설계도 </h2>  
+    <div style="font-weight: 700; font-size: 15px; text-align: center; color: #282d33;">
+        <img src=""width="800" height="400" >
    </div> 
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🌹기능설명 </h2>  
@@ -79,14 +83,13 @@
           </div>
     </div>
 <div align="center">
-  <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;">🥲 소감 😃</h2>
-    그동안 웹에 대해 공부하면서 넣어보고 싶었던 기능들을 (초보적이지만) 모두 구현할 수 있어서 매우 뿌듯하다.<br>
-    JPA를 다양한 방식으로 활용할 수 있었다. 검색기능을 통해 QueryDsl 설정까지 경험해 볼 수 있어서 좋았다.<br>
-    그동안 Maven만 써보고 처음 Gradle을 써보았는데, 확실히 빌드도 빠르고 Maven보다 편리한 것 같다. (코드를 길게 입력하지 않아도 되는 편리함!!)<br>
-    집에 있는 노트북과 강의장에 있는 노트북을 깃허브로 연동하여 프로젝트를 진행해서 그런지, 마치 팀프로젝트를 하는 듯한 느낌을 받을 수 있었다.<br>
-    무한스크롤에서 위치를 기억시켜 List 버튼을 클릭했을 때 원래 있던 위치로 가게 하는 것을 끝내 구현하지 못했다. (뒤로가기를 구현하는 편법을 사용했다..)<br>
-    스프링 시큐리티 적용 못한 것이 아쉽다.<br>
-    일정 시간 동안 일정 수 이상의 추천을 받을 경우 핫 게시판이 되게 하는 기능도 넣어보고 싶다.
+  <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;">😃 소감 🥲</h2>
+    :star:그동안 웹에 대해 공부하면서 넣어보고 싶었던 기능들을 모두 구현해 볼 수 있어서 매우 뿌듯하다.<br>
+    :star:JPA와 Gardle을 활용해 볼 수 있어서 좋았다.<br>
+    :star:집에 있는 노트북과 강의장에 있는 노트북을 깃허브로 연동하여 마치 팀프로젝트를 하는 듯한 느낌을 받을 수 있었다.<br>
+    :sweat_drops:무한스크롤에서 위치를 기억시켜 List 버튼을 클릭했을 때 원래 있던 위치로 가게 하는 것을 끝내 구현하지 못했다.<br>
+    :sweat_drops:스프링 시큐리티 적용 못한 것이 아쉽다.<br>
+    :sweat_drops:일정 시간 동안 일정 수 이상의 추천을 받을 경우 핫 게시판이 되게 하는 기능도 넣어보고 싶다.
 </div>
 
 
