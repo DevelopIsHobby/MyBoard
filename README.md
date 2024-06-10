@@ -58,13 +58,10 @@
    <h3>7. 댓글 CRUD</h3> 
    <details>
     <h6>댓글 등록</h6>
-          <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/e18c5fce-2612-478e-9c1e-1a046fd4c083"  width="800" height="400">
+          <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/bbdac3ca-1f92-4f5e-bbe7-57632ab1e8dc3"  width="800" height="400">
           </details>
-    <h6>댓글 수정</h6>
-       <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/410263ce-ca74-4629-91f1-d06c9e45ecc4"  width="800" height="400">
-          </details>
-    <h6>댓글 삭제</h6>
-              <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/2107edc0-2700-4162-9f2c-fe0b0519a610"  width="800" height="400">
+    <h6>댓글 수정 및 삭제</h6>
+       <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/5bf3b4cb-a0a7-4666-acf4-0e2791157d644"  width="800" height="400">
           </details>
     </details>
    </div>
@@ -81,19 +78,24 @@
           <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=plastic&logo=Bootstrap&logoColor=white">
           </div>
     </div>
-    <div align= "center">
-     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🥲 소감 </h2> <br> 
-    lombok를 사용하여 코드를 훨씬 간결하게 만들었다.<br>
-    오라클을 이용해 테이블을 만들고 인덱스를 활용해보았다.<br>
-    파일첨부를 하는 방법을 배울 수 있었다.<br>
-    스프링 시큐리티를 적용할 수 있었다.<br>
-    </div> 
-    <div align= "center">
+<div align="center">
+  <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;">🥲 소감 😃</h2>
+    그동안 웹에 대해 공부하면서 넣어보고 싶었던 기능들을 (초보적이지만) 모두 구현할 수 있어서 매우 뿌듯하다.<br>
+    JPA를 다양한 방식으로 활용할 수 있었다. 검색기능을 통해 QueryDsl 설정까지 경험해 볼 수 있어서 좋았다.<br>
+    그동안 Maven만 써보고 처음 Gradle을 써보았는데, 확실히 빌드도 빠르고 Maven보다 편리한 것 같다. (코드를 길게 입력하지 않아도 되는 편리함!!)<br>
+    집에 있는 노트북과 강의장에 있는 노트북을 깃허브로 연동하여 프로젝트를 진행해서 그런지, 마치 팀프로젝트를 하는 듯한 느낌을 받을 수 있었다.<br>
+    무한스크롤에서 위치를 기억시켜 List 버튼을 클릭했을 때 원래 있던 위치로 가게 하는 것을 끝내 구현하지 못했다. (뒤로가기를 구현하는 편법을 사용했다..)<br>
+    스프링 시큐리티 적용 못한 것이 아쉽다.<br>
+    일정 시간 동안 일정 수 이상의 추천을 받을 경우 핫 게시판이 되게 하는 기능도 넣어보고 싶다.
+</div>
+
+
+<div align= "center">
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🧑‍💻 Contact me </h2> <br> 
     <div align= "center"> <a href=https://www.notion.so/05ab0f771bb5433faebb8061defc48c4?pvs=4> <img src="https://img.shields.io/badge/Notion-000000?style=plastic&logo=Notion&logoColor=white&link=https://www.notion.so/05ab0f771bb5433faebb8061defc48c4?pvs=4"> </a>
           </div>  <br> 
     <div align= "center">  </div> 
-    </div>
+</div>
 
 
    
