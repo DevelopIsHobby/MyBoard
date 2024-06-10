@@ -20,62 +20,53 @@
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🌹기능설명 </h2>  
     <div style="font-weight: 700; font-size: 15px; text-align: center; color: #282d33;">
-  <h3>무한스크롤</h3>
+  <h3>1. 무한스크롤</h3>
   <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/f0cbbbda-f8ec-41a3-85f4-f0f8f9e15dad"width="800" height="400" >
     </details>
 
-   <h3>좋아요</h3>
+   <h3>2. 좋아요</h3>
       <details>
         <img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/3aaede2d-a9c7-4019-b4cc-48478ef71bb4" width="800" height="400"></details>
 
-  <h3>스크랩 & 마이페이지</h3>
-    <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/48855487-d365-4045-ae18-efe6c0391413" width="800" height="400">
+  <h3>3. 스크랩 & 마이페이지</h3>
+    <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/48855487-d365-4045-ae18-efe6c0391413" width="800" height="400"></details>
 
-    <h4>조회 화면 요약</h4>
-    자신이 작성한 게시글의 경우만 수정, 삭제 가능<br><b>위 화면은 로그인을 하지 않은채 접근 한 경우임</b><br>
-    로그인을 해야만 댓글 작성 가능<br>
-    댓글 CRUD(댓글을 클릭하면 수정 및 삭제 가능)<br>
-
-    
-  <h5>댓글 클릭시</h5>
-    <details>    <img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/dc5382e1-670b-450c-8f72-1c7613638447">
-    <b>로그인한 사용자만 댓글 CRUD 가능</b>
-    </details>
-      
-  <h6>이미지 파일 클릭시 확대</h6>
-     <details><img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/46da5466-fb99-4aaf-bef5-dc8ebd58aa3a"><br><b>다시 한번 클릭하면 사라짐</b></details>
-  <h6>이미지 파일이 아닐경우 다른 이미지 사용</h6>
-    <details><img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/31395d07-404b-4e1d-8f9a-80511891899a"><br><b>파일 이름 클릭하면 다운로드 진행</b></details>
-  </details>
-  
-   <h3>검색 + 태그</h3>
+   <h3>4. 검색 + 태그</h3>
       <details>
-        <img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/2ed0f240-74bc-42fb-92ff-49713fadc4e4">
-        <h4>스프링 시큐리티 활용</h4>
-        자동로그인 기능(Remember-me 클릭시 로그인 상태 유지)
+        <img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/cbab2be1-70a8-4e8c-a268-479817c5c506" width="800" height="400"></details>
+
+   <h3>5. 파일첨부 & 썸네일</h3>
+      <details>
+        <img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/e87b680f-711b-42f7-b5bb-41d64ca1854c" width="800" height="400">
+          <h5>사진 클릭시 원본 파일 애니메이션</h5>
       </details>
-    <h3>파일첨부 & 썸네일</h3>
-      <details>
-        <img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/2ed0f240-74bc-42fb-92ff-49713fadc4e4">
-        <h4>스프링 시큐리티 활용</h4>
-        자동로그인 기능(Remember-me 클릭시 로그인 상태 유지)</details>
         
-   <h3>날짜 업데이트</h3>
-      <details>
-        <img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/2ed0f240-74bc-42fb-92ff-49713fadc4e4">
-        <h4>스프링 시큐리티 활용</h4>
-        자동로그인 기능(Remember-me 클릭시 로그인 상태 유지)</details>
-   <h3>게시글 CRUD</h3> 
-  <details><img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/1ba50979-7435-48e7-875d-2d78d0882925">
-    <h4>메인 화면 기능 요약</h4>
-    페이징<br>
-    게시글 덧글 수 확인<br>
-    키워드 검색</details>
-    <h3>댓글 CRUD</h3>
-    <details><img src="https://github.com/DevelopIsHobby/SpringBoard/assets/107912101/91230af4-de24-4106-8bc4-cce7cf07524f">
-    <h4>등록 화면 기능 요약</h4>
-      오직 읽을 수만 있음<br>
-    파일 첨부 기능 구현</details>
+
+   <h3>6. 게시글 CRUD</h3> 
+   <details>
+       <h6>게시글 등록</h6>
+          <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/e18c5fce-2612-478e-9c1e-1a046fd4c083"  width="800" height="400">
+          </details>
+    <h6>게시글 수정</h6>
+       <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/410263ce-ca74-4629-91f1-d06c9e45ecc4"  width="800" height="400">
+          </details>
+    <h6>게시글 삭제</h6>
+              <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/2107edc0-2700-4162-9f2c-fe0b0519a610"  width="800" height="400">
+          </details>
+    </details>
+    
+   <h3>7. 댓글 CRUD</h3> 
+   <details>
+    <h6>댓글 등록</h6>
+          <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/e18c5fce-2612-478e-9c1e-1a046fd4c083"  width="800" height="400">
+          </details>
+    <h6>댓글 수정</h6>
+       <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/410263ce-ca74-4629-91f1-d06c9e45ecc4"  width="800" height="400">
+          </details>
+    <h6>댓글 삭제</h6>
+              <details><img src="https://github.com/DevelopIsHobby/MyBoard/assets/107912101/2107edc0-2700-4162-9f2c-fe0b0519a610"  width="800" height="400">
+          </details>
+    </details>
    </div>
    </div> 
     </div>
